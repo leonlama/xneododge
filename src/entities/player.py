@@ -4,6 +4,8 @@ from src.config import PLAYER_SCALE, PLAYER_SPRITE_PATH, PLAYER_SPEED
 from src.systems.status_effects import StatusEffectManager
 
 class Player(arcade.Sprite):
+    DEADZONE_DISTANCE = 2  # adjust this value as needed
+
     def __init__(self, x, y, window=None):
         super().__init__(PLAYER_SPRITE_PATH, PLAYER_SCALE)
         self.window = window  # 💡 Store window reference here
@@ -29,6 +31,7 @@ class Player(arcade.Sprite):
         self.invincible = False
         self.invincible_timer = 0
         self.invincible_duration = 1.0  # 1 second
+        self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
 
     def update(self, delta_time: float = 1/60):
         self.update_movement(delta_time)
@@ -47,14 +50,19 @@ class Player(arcade.Sprite):
         dy = self.target_y - self.center_y
         distance = math.hypot(dx, dy)
 
-        if distance > 1:
-            dx /= distance
-            dy /= distance
-            self.center_x += dx * self.speed * delta_time
-            self.center_y += dy * self.speed * delta_time
-            self.last_dx = dx
-            self.last_dy = dy
+        # Deadzone distance (minimum distance to move)
+        DEADZONE = 2
+
+        if distance > DEADZONE:
+            move_x = (dx / distance) * self.speed
+            move_y = (dy / distance) * self.speed
+            self.center_x += move_x * delta_time
+            self.center_y += move_y * delta_time
+            self.last_dx = dx / distance
+            self.last_dy = dy / distance
         else:
+            self.center_x = self.target_x
+            self.center_y = self.target_y
             self.change_x = 0
             self.change_y = 0
 
@@ -101,6 +109,17 @@ class Player(arcade.Sprite):
         if self.invincible:
             return  # Skip if invincible
 
+        if "shield" in self.status_effects.active_effects:
+            if self.status_effects.active_effects["shield"]["charges"] > 0:
+                self.status_effects.active_effects["shield"]["charges"] -= 1
+                if self.status_effects.active_effects["shield"]["charges"] <= 0:
+                    del self.status_effects.active_effects["shield"]
+                print("🛡️ Shield absorbed the hit!")
+                return
+
+        # Play damage sound
+        arcade.play_sound(self.damage_sound)
+
         self.invincible = True
         self.invincible_timer = 0
         print("⚔️ Player takes damage!")
@@ -126,6 +145,3 @@ class Player(arcade.Sprite):
         self.golden_hearts = max(0, self.golden_hearts)
 
         # TODO: Trigger half-heart visual logic if amount == 0.5
-
-        # Play damage sound
-        arcade.play_sound(arcade.load_sound("assets/sounds/damage.wav"))
