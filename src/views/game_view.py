@@ -18,8 +18,10 @@ class GameView(arcade.View):
         self.clear()
         self.player_list.draw()
 
-    def on_update(self, delta_time):
-        self.player.update_movement()
+    def on_update(self, delta_time: float):
+        self.player.update_movement(delta_time)
+        self.player_list.update()
+        self.player_list.update_animation()
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self.mouse_held:
