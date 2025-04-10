@@ -1,4 +1,5 @@
 import arcade
+from src.entities.player import Player
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -8,13 +9,28 @@ class XNeododge(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.BLACK)
+        self.player = None
+        self.keys = {}
+
+    def setup(self):
+        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
     def on_draw(self):
         self.clear()
-        arcade.draw_text("XNeododge Starting...", 200, 300, arcade.color.WHITE, 20)
+        self.player.draw()
+
+    def on_update(self, delta_time):
+        self.player.update_movement(self.keys)
+
+    def on_key_press(self, key, modifiers):
+        self.keys[key] = True
+
+    def on_key_release(self, key, modifiers):
+        self.keys[key] = False
 
 def main():
-    window = XNeododge()
+    game = XNeododge()
+    game.setup()
     arcade.run()
 
 if __name__ == "__main__":
