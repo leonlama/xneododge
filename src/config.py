@@ -18,7 +18,15 @@ PLAYER_SPRITE_PATH = os.path.join(ASSETS_DIR, "player", "player.png")
 PLAYER_SPEED = 225
 
 # === Orbs ===
-ORB_SCALE = 0.125
+ORB_SCALES = {
+    "speed": 0.125,
+    "multiplier": 0.125,
+    "cooldown": 0.125,
+    "shield": 0.125,
+    "red_heart": 0.035,
+    "gray_heart": 0.035,
+    "golden_heart": 0.035,
+}
 
 # === HUD ===
 # Heart display

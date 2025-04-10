@@ -16,6 +16,7 @@ class Player(arcade.Sprite):
         self.has_shield = False
         self.max_hearts = 3      # Default max hearts (can be increased with artifacts later)
         self.current_hearts = 3  # Starting health
+        self.gold_hearts = 0
         self.score = 0           # Starting score
         self.status_effects = StatusEffectManager(self)
 
