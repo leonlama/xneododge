@@ -46,7 +46,7 @@ class HUD:
     def draw(self):
         # Top center: Wave and time left
         arcade.draw_text(
-            f"Wave {self.wave_manager.current_wave}: {self.wave_manager.wave_type}",
+            f"Wave {self.wave_manager.current_wave}: {self.wave_manager.current_wave_type}",
             SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30,
             arcade.color.LIME_GREEN, 20, anchor_x="center", font_name=FONT_NAME
         )

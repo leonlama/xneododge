@@ -4,21 +4,25 @@ class WaveManager:
     def __init__(self):
         self.current_wave = 1
         self.time_left = self._calculate_wave_duration()  # Use the new method here
-        self.wave_type = "Swarm"  # initial type
         self.wave_types = ["Swarm", "Sniper", "Bomber", "Mixed"]
         self.has_spawned_this_wave = False
+        self.current_wave_type = "Chaser"  # Define initial wave type to avoid first-frame errors
+        self.start_next_wave = False  # Initialize the trigger flag
 
     def update(self, delta_time):
         self.time_left -= delta_time
         if self.time_left <= 0:
             self.current_wave += 1
+            self.current_wave_type = self._pick_wave_type()
             self.time_left = self._calculate_wave_duration()
-            self.has_spawned_this_wave = False
+            self.start_next_wave = True
+            print(f"[WAVE MANAGER] New wave: {self.current_wave} - {self.current_wave_type}")
 
-    def start_next_wave(self):
-        self.current_wave += 1
-        self.time_left = self._calculate_wave_duration()  # Use the new method here
-        self.wave_type = random.choice(self.wave_types)
+    def _pick_wave_type(self):
+        return random.choice(self.wave_types)
+
+    def consume_wave_trigger(self):
+        self.start_next_wave = False  # Reset the trigger flag
 
     def get_spawn_recipe(self) -> dict:
         """Return a spawn distribution that scales with wave number."""

@@ -9,6 +9,7 @@ from src.systems.coin_spawner import CoinSpawner
 from src.systems.coin_manager import CoinManager
 from src.systems.enemy_manager import EnemyManager
 from src.systems.wave_management.wave_manager import WaveManager
+from src.views.ui.wave_announcement import WaveAnnouncement
 
 class GameView(arcade.View):
     def __init__(self):
@@ -21,6 +22,7 @@ class GameView(arcade.View):
         self.hud = None
         self.artifact_manager = ArtifactManager()
         self.enemy_manager = None
+        self.wave_announcement = None
 
     def setup(self):
         self.player_list = arcade.SpriteList()
@@ -54,6 +56,8 @@ class GameView(arcade.View):
         self.coin_list.draw()
         self.enemy_manager.draw()  # Just before HUD
         self.hud.draw()
+        if self.wave_announcement:
+            self.wave_announcement.draw(SCREEN_WIDTH, SCREEN_HEIGHT)
 
     def on_update(self, delta_time: float):
         # Update player (was missing, causing slow/no movement)
@@ -84,6 +88,14 @@ class GameView(arcade.View):
         if self.wave_manager.should_spawn_wave():
             recipe = self.wave_manager.get_spawn_recipe()
             self.enemy_manager.spawn_from_recipe(recipe)
+
+        if self.wave_manager.start_next_wave:
+            wave_type = self.wave_manager.current_wave_type
+            self.wave_announcement = WaveAnnouncement(f"Wave {self.wave_manager.current_wave}: {wave_type}")
+            self.wave_manager.consume_wave_trigger()
+
+        if self.wave_announcement:
+            self.wave_announcement.update(delta_time)
 
         # Update coin system
         self.coin_list.update_animation()
