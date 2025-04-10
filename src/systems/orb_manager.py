@@ -19,6 +19,7 @@ class OrbManager:
         self.orb_textures = {}
         for orb_type, texture_path in ORB_TYPES.items():
             self.orb_textures[orb_type] = arcade.load_texture(texture_path)
+        self.orb_collect_sound = arcade.load_sound("assets/sounds/orb_collect.wav")
 
     def spawn_orb(self):
         # Random spawn from all orb types
@@ -44,4 +45,5 @@ class OrbManager:
         hit_list = arcade.check_for_collision_with_list(player, self.orb_list)
         for orb in hit_list:
             orb.apply_effect(player)
+            arcade.play_sound(self.orb_collect_sound)
             orb.remove_from_sprite_lists()
