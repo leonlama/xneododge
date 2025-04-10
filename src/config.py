@@ -28,6 +28,9 @@ ORB_SCALES = {
     "golden_heart": 0.035,
 }
 
+# === Artifacts ===
+ARTIFACT_SCALE = 0.125
+
 # === HUD ===
 # Heart display
 HEART_SIZE = 2       # Size in pixels for heart icons

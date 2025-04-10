@@ -2,10 +2,11 @@ import arcade
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_NAME, HEART_SIZE, HEART_SPACING, HUD_FONT_SIZE_LARGE, HUD_FONT_SIZE_MEDIUM, HUD_FONT_SIZE_SMALL
 
 class HUD:
-    def __init__(self, player, wave_manager, coin_count):
+    def __init__(self, player, wave_manager, coin_count, artifact_manager):
         self.player = player
         self.wave_manager = wave_manager
         self.coin_count = coin_count
+        self.artifact_manager = artifact_manager
         self.heart_images = {
             'red': "assets/hud/hearts/heart.png",
             'gray': "assets/hud/hearts/heart_empty.png",
@@ -57,3 +58,9 @@ class HUD:
         # Bottom right: Coins
         arcade.draw_text(f"Coins: {self.coin_count}", SCREEN_WIDTH - 10, 10,
                          arcade.color.GOLD, HUD_FONT_SIZE_MEDIUM, anchor_x="right", font_name=FONT_NAME)
+        
+        # Bottom left: Artifact status
+        if "dash" in self.artifact_manager.active_artifacts:
+            cooldown = self.artifact_manager.cooldowns.get("dash", 0)
+            status = "READY" if cooldown <= 0 else f"CD: {cooldown:.1f}s"
+            arcade.draw_text(f"Dash: {status}", 10, 10, arcade.color.CYAN, 14, font_name=FONT_NAME)

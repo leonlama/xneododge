@@ -3,6 +3,8 @@ from src.entities.player import Player
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.systems.orb_manager import OrbManager
 from src.views.hud import HUD
+from src.mechanics.artifacts.artifact_manager import ArtifactManager
+from src.systems.artifact_spawner import ArtifactSpawner
 
 class DummyWaveManager:
     def __init__(self):
@@ -18,40 +20,48 @@ class GameView(arcade.View):
         self.orb_manager = OrbManager()
         self.spawn_timer = 0
         self.hud = None
+        self.artifact_manager = ArtifactManager()
 
     def setup(self):
-        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.player_list = arcade.SpriteList()
+        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, window=self.window)
         self.player_list.append(self.player)
         self.wave_manager = DummyWaveManager()  # Replace with real one later
         self.coin_count = 0  # Start with zero coins
-        self.hud = HUD(self.player, self.wave_manager, self.coin_count)
+        
+        # Initialize artifact system
+        self.artifact_manager = ArtifactManager()
+        self.artifact_list = arcade.SpriteList()
+        self.artifact_manager.artifact_list = self.artifact_list
+        self.artifact_spawner = ArtifactSpawner(self.artifact_list)
+        
+        # Initialize HUD after artifact_manager is set up
+        self.hud = HUD(self.player, self.wave_manager, self.coin_count, self.artifact_manager)
 
     def on_draw(self):
         self.clear()
         self.player_list.draw()
         self.orb_manager.draw()
+        self.artifact_list.draw()
         self.hud.draw()
 
     def on_update(self, delta_time: float):
-        self.player.update_movement(delta_time)
-        self.player_list.update()
+        # Update player (was missing, causing slow/no movement)
+        self.player.update()
+
         self.player_list.update_animation()
-        
-        # Update orb manager
         self.orb_manager.update(delta_time)
-        
-        # Update player status effects
+        self.artifact_manager.update(delta_time)
         self.player.status_effects.update()
-        
-        # Spawn orbs every few seconds
+
         self.spawn_timer += delta_time
-        if self.spawn_timer >= 3.0:  # Spawn every 3 seconds
+        if self.spawn_timer >= 3.0:
             self.orb_manager.spawn_orb()
             self.spawn_timer = 0
-            
-        # Check for collisions
+
         self.orb_manager.check_collisions(self.player, self.apply_effect)
+        self.artifact_spawner.try_spawn_dash()
+        self.artifact_manager.check_collision(self.player)
 
     def apply_effect(self, orb_type):
         print(f"Collected orb: {orb_type}")
@@ -66,3 +76,8 @@ class GameView(arcade.View):
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.mouse_held = False
+        
+    def on_key_press(self, key, modifiers):
+        if self.artifact_manager.handle_key_press(key, self.player):
+            print("Artifact used!")
+        # Handle other keys as needed (movement, etc.)
