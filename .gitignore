@@ -1,7 +1,23 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-.venv/
-build/
+*.py[cod]
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Test output
+htmlcov/
+coverage.xml
+
+# Build
 dist/
-.env
-htmlcov
+*.egg-info/
