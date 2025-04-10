@@ -8,12 +8,8 @@ from src.systems.artifact_spawner import ArtifactSpawner
 from src.systems.coin_spawner import CoinSpawner
 from src.systems.coin_manager import CoinManager
 from src.systems.enemy_manager import EnemyManager
+from src.systems.wave_management.wave_manager import WaveManager
 
-class DummyWaveManager:
-    def __init__(self):
-        self.current_wave = 1
-        self.time_left = 60
-        
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -30,7 +26,7 @@ class GameView(arcade.View):
         self.player_list = arcade.SpriteList()
         self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, window=self.window)
         self.player_list.append(self.player)
-        self.wave_manager = DummyWaveManager()  # Replace with real one later
+        self.wave_manager = WaveManager()  # Use the real wave manager
         self.coin_count = 0  # Start with zero coins
         
         # Initialize enemy manager
@@ -63,6 +59,9 @@ class GameView(arcade.View):
         # Update player (was missing, causing slow/no movement)
         self.player.update()
 
+        # Update wave manager
+        self.wave_manager.update(delta_time)
+
         self.player_list.update_animation()
         self.orb_manager.update(delta_time)
         self.artifact_manager.update(delta_time)
@@ -80,6 +79,11 @@ class GameView(arcade.View):
         # Update enemy manager
         self.enemy_manager.update(delta_time)
         self.enemy_manager.check_collisions(self.player)
+
+        # Spawn enemies based on wave manager's recipe if not already spawned this wave
+        if self.wave_manager.should_spawn_wave():
+            recipe = self.wave_manager.get_spawn_recipe()
+            self.enemy_manager.spawn_from_recipe(recipe)
 
         # Update coin system
         self.coin_list.update_animation()

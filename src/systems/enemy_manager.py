@@ -10,15 +10,15 @@ from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 class EnemyManager:
     def __init__(self, player):
         self.enemy_list = arcade.SpriteList()
-        self.spawn_timer = 0
-        self.spawn_interval = 5.0  # seconds
+        # self.spawn_timer = 0
+        # self.spawn_interval = 5.0  # seconds
         self.player = player
 
     def update(self, delta_time):
-        self.spawn_timer += delta_time
-        if self.spawn_timer >= self.spawn_interval:
-            self.spawn_random_enemy()
-            self.spawn_timer = 0
+        # self.spawn_timer += delta_time
+        # if self.spawn_timer >= self.spawn_interval:
+        #     self.spawn_random_enemy()
+        #     self.spawn_timer = 0
 
         for enemy in self.enemy_list:
             enemy.update()
@@ -27,9 +27,12 @@ class EnemyManager:
         self.enemy_list.draw()
 
     def spawn_random_enemy(self):
+        enemy_type = random.choice(["chaser", "wanderer", "shooter", "bomber"])
+        self.spawn_enemy(enemy_type)
+
+    def spawn_enemy(self, enemy_type):
         x = random.randint(100, SCREEN_WIDTH - 100)
         y = random.randint(100, SCREEN_HEIGHT - 100)
-        enemy_type = random.choice(["chaser", "wanderer", "shooter", "bomber"])
 
         print(f"[DEBUG] Spawning enemy at ({x}, {y}) of type {enemy_type}")
 
@@ -43,6 +46,11 @@ class EnemyManager:
             enemy = BomberEnemy(x, y, self.player)
 
         self.enemy_list.append(enemy)
+
+    def spawn_from_recipe(self, recipe: dict):
+        for enemy_type, count in recipe.items():
+            for _ in range(count):
+                self.spawn_enemy(enemy_type)
 
     def check_collisions(self, player):
         for enemy in self.enemy_list:

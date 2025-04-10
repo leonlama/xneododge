@@ -45,12 +45,16 @@ class HUD:
 
     def draw(self):
         # Top center: Wave and time left
-        arcade.draw_text(f"Wave {self.wave_manager.current_wave}",
-                         SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30,
-                         arcade.color.LIME_GREEN, HUD_FONT_SIZE_LARGE, anchor_x="center", font_name=FONT_NAME)
-        arcade.draw_text(f"{self.wave_manager.time_left}s left",
-                         SCREEN_WIDTH // 2, SCREEN_HEIGHT - 55,
-                         arcade.color.LIGHT_GREEN, HUD_FONT_SIZE_SMALL, anchor_x="center", font_name=FONT_NAME)
+        arcade.draw_text(
+            f"Wave {self.wave_manager.current_wave}: {self.wave_manager.wave_type}",
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30,
+            arcade.color.LIME_GREEN, 20, anchor_x="center", font_name=FONT_NAME
+        )
+        arcade.draw_text(
+            f"{int(self.wave_manager.time_left)}s left",
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT - 55,
+            arcade.color.LIGHT_GREEN, 14, anchor_x="center", font_name=FONT_NAME
+        )
 
         # Top left: Hearts and score
         y_offset = SCREEN_HEIGHT - 30
