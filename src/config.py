@@ -16,3 +16,6 @@ TITLE_MUSIC_PATH = os.path.join(ASSETS_DIR, "audio", "title.mp3")
 PLAYER_SCALE = 0.035
 PLAYER_SPRITE_PATH = os.path.join(ASSETS_DIR, "player", "player.png")
 PLAYER_SPEED = 225
+
+# === Orbs ===
+ORB_SCALE = 0.125
