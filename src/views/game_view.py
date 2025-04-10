@@ -2,6 +2,7 @@ import arcade
 from src.entities.player import Player
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.systems.orb_manager import OrbManager
+from src.views.hud import HUD
 
 class GameView(arcade.View):
     def __init__(self):
@@ -11,16 +12,19 @@ class GameView(arcade.View):
         self.mouse_held = False
         self.orb_manager = OrbManager()
         self.spawn_timer = 0
+        self.hud = None
 
     def setup(self):
         self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player)
+        self.hud = HUD(self.player)
 
     def on_draw(self):
         self.clear()
         self.player_list.draw()
         self.orb_manager.draw()
+        self.hud.draw()
 
     def on_update(self, delta_time: float):
         self.player.update_movement(delta_time)

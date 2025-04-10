@@ -7,3 +7,7 @@ class Orb(arcade.Sprite):
         self.center_x = x
         self.center_y = y
         self.orb_type = orb_type
+        
+    def apply_effect(self, player):
+        """Apply the orb's effect to the player."""
+        player.status_effects.add_effect(self.orb_type, duration=10)

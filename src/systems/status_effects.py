@@ -28,14 +28,39 @@ class StatusEffectManager:
         self.active_effects[effect_name] = {
             "expires": time.time() + duration,
             "on_expire": on_expire,
+            "time_left": duration
         }
 
-    def update(self):
-        current_time = time.time()
-        to_remove = []
-        for name, effect in self.active_effects.items():
-            if current_time > effect["expires"]:
-                effect["on_expire"]()
-                to_remove.append(name)
-        for name in to_remove:
-            del self.active_effects[name]
+    def add_effect(self, effect_type: str, duration: float = 10.0):
+        """Add an effect to the active effects list with the specified duration."""
+        # If the effect is already applied, we'll just update the duration
+        if effect_type in self.active_effects:
+            self.active_effects[effect_type]["time_left"] = duration
+        else:
+            # Otherwise, apply the effect
+            self.apply_effect(effect_type)
+
+    def update(self, delta_time: float = None):
+        if delta_time is None:
+            # Maintain backward compatibility with the old time-based approach
+            current_time = time.time()
+            to_remove = []
+            for name, effect in self.active_effects.items():
+                if current_time > effect["expires"]:
+                    effect["on_expire"]()
+                    to_remove.append(name)
+                else:
+                    # Update time_left for HUD display
+                    effect["time_left"] = effect["expires"] - current_time
+            for name in to_remove:
+                del self.active_effects[name]
+        else:
+            # New delta_time based approach
+            to_remove = []
+            for name, effect in self.active_effects.items():
+                effect["time_left"] -= delta_time
+                if effect["time_left"] <= 0:
+                    effect["on_expire"]()
+                    to_remove.append(name)
+            for name in to_remove:
+                del self.active_effects[name]
