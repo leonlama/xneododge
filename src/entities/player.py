@@ -6,14 +6,15 @@ class Player(arcade.Sprite):
         super().__init__(texture_path, scale)
         self.center_x = x
         self.center_y = y
-        self.speed = 5
+        self.target_x = x
+        self.target_y = y
+        self.easing = 0.15  # How fast the player moves toward the mouse
 
-    def update_movement(self, keys):
-        if keys[arcade.key.W] or keys[arcade.key.UP]:
-            self.center_y += self.speed
-        if keys[arcade.key.S] or keys[arcade.key.DOWN]:
-            self.center_y -= self.speed
-        if keys[arcade.key.A] or keys[arcade.key.LEFT]:
-            self.center_x -= self.speed
-        if keys[arcade.key.D] or keys[arcade.key.RIGHT]:
-            self.center_x += self.speed
+    def update_movement(self):
+        # Smooth lerping to target position
+        self.center_x += (self.target_x - self.center_x) * self.easing
+        self.center_y += (self.target_y - self.center_y) * self.easing
+
+    def set_target(self, x, y):
+        self.target_x = x
+        self.target_y = y
