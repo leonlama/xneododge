@@ -6,6 +6,7 @@ class ArtifactManager:
         self.cooldowns = {}
         self.max_cooldowns = {"dash": 5.0}  # 5s cooldown
         self.artifact_list = None
+        self.artifact_collect_sound = arcade.load_sound("assets/sounds/artifact_collect.mp3")
 
     def collect(self, artifact_type):
         self.active_artifacts[artifact_type] = True
@@ -42,4 +43,5 @@ class ArtifactManager:
             self.active_artifacts[name] = True
             self.cooldowns[name] = 0
             print(f"Collected artifact: {name}")
+            arcade.play_sound(self.artifact_collect_sound)
             artifact.remove_from_sprite_lists()
