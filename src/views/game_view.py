@@ -4,6 +4,11 @@ from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.systems.orb_manager import OrbManager
 from src.views.hud import HUD
 
+class DummyWaveManager:
+    def __init__(self):
+        self.current_wave = 1
+        self.time_left = 60
+
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -18,7 +23,9 @@ class GameView(arcade.View):
         self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player)
-        self.hud = HUD(self.player)
+        self.wave_manager = DummyWaveManager()  # Replace with real one later
+        self.coin_count = 0  # Start with zero coins
+        self.hud = HUD(self.player, self.wave_manager, self.coin_count)
 
     def on_draw(self):
         self.clear()

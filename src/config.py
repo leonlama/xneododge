@@ -19,3 +19,12 @@ PLAYER_SPEED = 225
 
 # === Orbs ===
 ORB_SCALE = 0.125
+
+# === HUD ===
+# Heart display
+HEART_SIZE = 2       # Size in pixels for heart icons
+HEART_SPACING = 20   # Horizontal spacing between hearts
+# Font sizes
+HUD_FONT_SIZE_LARGE = 20    # For wave numbers and important info
+HUD_FONT_SIZE_MEDIUM = 16   # For secondary information like coin count
+HUD_FONT_SIZE_SMALL = 14    # For status effects and timer
