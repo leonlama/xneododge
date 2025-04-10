@@ -50,4 +50,4 @@ class EnemyManager:
                 if isinstance(enemy, BomberEnemy):
                     enemy.explode()
                 else:
-                    print("⚔️ Player takes damage!")
+                    player.take_damage(1.0)  # For melee enemies

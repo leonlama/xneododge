@@ -21,13 +21,26 @@ class Player(arcade.Sprite):
         self.has_shield = False
         self.max_hearts = 3      # Default max hearts (can be increased with artifacts later)
         self.current_hearts = 3  # Starting health
-        self.gold_hearts = 0
+        self.golden_hearts = 0   # Corrected attribute name
+        self.partial_heart = False  # Added partial_heart attribute
         self.score = 0           # Starting score
         self.coin_count = 0
         self.status_effects = StatusEffectManager(self)
+        self.invincible = False
+        self.invincible_timer = 0
+        self.invincible_duration = 1.0  # 1 second
 
     def update(self, delta_time: float = 1/60):
         self.update_movement(delta_time)
+        if self.invincible:
+            self.invincible_timer += delta_time
+            if int(self.invincible_timer * 10) % 2 == 0:
+                self.alpha = 255
+            else:
+                self.alpha = 100
+            if self.invincible_timer >= self.invincible_duration:
+                self.invincible = False
+                self.alpha = 255
 
     def update_movement(self, delta_time: float):
         dx = self.target_x - self.center_x
@@ -82,3 +95,37 @@ class Player(arcade.Sprite):
         
     def apply_orb_effect(self, effect_name: str):
         self.status_effects.apply_effect(effect_name)
+
+    def take_damage(self, amount):
+        """Apply damage to the player."""
+        if self.invincible:
+            return  # Skip if invincible
+
+        self.invincible = True
+        self.invincible_timer = 0
+        print("⚔️ Player takes damage!")
+
+        if self.golden_hearts > 0:
+            self.golden_hearts -= 1
+            print("💛 Golden heart lost!")
+            return
+
+        if self.partial_heart:
+            self.partial_heart = False
+            return
+
+        if self.current_hearts > 0:
+            self.current_hearts -= 1
+            print("❤️ Red heart lost!")
+            return
+
+        print("💀 Player dead")  # Handle game over here
+
+        # Clamp health
+        self.current_hearts = max(0, self.current_hearts)
+        self.golden_hearts = max(0, self.golden_hearts)
+
+        # TODO: Trigger half-heart visual logic if amount == 0.5
+
+        # Play damage sound
+        arcade.play_sound(arcade.load_sound("assets/sounds/damage.wav"))

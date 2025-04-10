@@ -10,7 +10,8 @@ class HUD:
         self.heart_images = {
             'red': "assets/hud/hearts/heart.png",
             'gray': "assets/hud/hearts/heart_empty.png",
-            'gold': "assets/hud/hearts/heart_gold.png"
+            'gold': "assets/hud/hearts/heart_gold.png",
+            'half': "assets/hud/hearts/heart_half.png"
         }
         self.coin_texture = arcade.load_texture("assets/coins/bank.png")
 
@@ -53,17 +54,22 @@ class HUD:
 
         # Top left: Hearts and score
         y_offset = SCREEN_HEIGHT - 30
+
+        # Draw red and gray hearts
         for i in range(self.player.max_hearts):
-            # Draw the correct heart type (red, gray, gold)
             if i < self.player.current_hearts:
                 heart_path = self.heart_images['red']
-            elif i < self.player.max_hearts - self.player.gold_hearts:
-                heart_path = self.heart_images['gray']
+            elif i == self.player.current_hearts and self.player.partial_heart:
+                heart_path = self.heart_images['half']
             else:
-                heart_path = self.heart_images['gold']
-                
-            # Use the helper method to draw hearts
+                heart_path = self.heart_images['gray']
+
             self.draw_centered_texture(30 + i * HEART_SPACING, y_offset, HEART_SIZE, heart_path)
+
+        # Draw golden hearts stacked next to red/gray
+        for i in range(self.player.golden_hearts):
+            x = 30 + (self.player.max_hearts + i) * HEART_SPACING
+            self.draw_centered_texture(x, y_offset, HEART_SIZE, self.heart_images['gold'])
 
         arcade.draw_text(f"Score: {self.player.score}", 10, y_offset - 35,
                          arcade.color.WHITE, HUD_FONT_SIZE_SMALL, font_name=FONT_NAME)

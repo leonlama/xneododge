@@ -9,14 +9,18 @@ class BomberEnemy(BaseEnemy):
         self.explode_range = 60
         self.change_x = random.choice([-1, 1])
         self.change_y = random.choice([-1, 1])
+        self.has_exploded = False
 
     def update(self):
         self.center_x += self.change_x * 0.5
         self.center_y += self.change_y * 0.5
 
-        if arcade.get_distance_between_sprites(self, self.player) < self.explode_range:
-            self.explode()
+        if arcade.get_distance_between_sprites(self, self.player) < self.explode_range and not self.has_exploded:
+            print("💥 Bomber explodes!")
+            self.player.take_damage(1)  # or 0.5 if you prefer
+            self.has_exploded = True
+            self.remove_from_sprite_lists()
 
     def explode(self):
-        print("�� Bomber explodes!")
+        print("💥 Bomber explodes!")
         self.remove_from_sprite_lists()

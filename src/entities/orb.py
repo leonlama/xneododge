@@ -21,4 +21,4 @@ class Orb(arcade.Sprite):
         elif orb_type == "gray_heart":
             player.max_hearts += 1
         elif orb_type == "golden_heart":
-            player.gold_hearts += 1
+            player.golden_hearts += 1
