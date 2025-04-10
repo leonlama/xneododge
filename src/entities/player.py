@@ -1,9 +1,9 @@
 import arcade
+from src.config import PLAYER_SCALE, PLAYER_SPRITE_PATH
 
 class Player(arcade.Sprite):
-    def __init__(self, x, y, scale=0.5):
-        texture_path = "assets/player/player.png"
-        super().__init__(texture_path, scale)
+    def __init__(self, x, y):
+        super().__init__(PLAYER_SPRITE_PATH, PLAYER_SCALE)
         self.center_x = x
         self.center_y = y
         self.target_x = x

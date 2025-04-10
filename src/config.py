@@ -1,0 +1,6 @@
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+SCREEN_TITLE = "XNeododge"
+
+PLAYER_SCALE = 0.035
+PLAYER_SPRITE_PATH = "assets/player/player.png"
