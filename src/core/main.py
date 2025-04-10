@@ -1,4 +1,7 @@
 import arcade
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from src.entities.player import Player
 
 SCREEN_WIDTH = 800
@@ -20,7 +23,10 @@ class XNeododge(arcade.Window):
         self.player.draw()
 
     def on_update(self, delta_time):
-        self.player.update_movement(self.keys)
+        self.player.update_movement()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.player.set_target(x, y)
 
     def on_key_press(self, key, modifiers):
         self.keys[key] = True

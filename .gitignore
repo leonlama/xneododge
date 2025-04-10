@@ -2,22 +2,76 @@
 __pycache__/
 *.py[cod]
 *.pyd
+*.so
 
-# Virtual environment
+# Virtual environments
 venv/
 env/
+.venv/
+dev_venv/
 
-# IDE settings
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Distribution / packaging
+*.egg-info/
+.eggs/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Coverage & test output
+htmlcov/
+.coverage
+coverage.xml
+.cache/
+nosetests.xml
+test-results/
+
+# IDE configs
 .vscode/
 .idea/
 
-# OS files
+# OS junk
 .DS_Store
+Thumbs.db
 
-# Test output
-htmlcov/
-coverage.xml
+# Python environment metadata
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Build
-dist/
-*.egg-info/
+# Node/JS if needed in frontend
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Editor backups
+*~
+
+# GitHub Copilot artifacts
+copilot*.json
+
+# Arcade & assets
+assets/__pycache__/
+assets/**/*.pyc
+assets/**/*.pyo
+
+# Optional: exclude temporary game saves or replays
+saves/
+replays/
+
+# Optional: exclude uploaded test assets
+assets/test/
+
+# VS Code .env file
+.env
+.env.*
