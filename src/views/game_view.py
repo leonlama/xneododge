@@ -7,12 +7,13 @@ from src.mechanics.artifacts.artifact_manager import ArtifactManager
 from src.systems.artifact_spawner import ArtifactSpawner
 from src.systems.coin_spawner import CoinSpawner
 from src.systems.coin_manager import CoinManager
+from src.systems.enemy_manager import EnemyManager
 
 class DummyWaveManager:
     def __init__(self):
         self.current_wave = 1
         self.time_left = 60
-
+        
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -23,6 +24,7 @@ class GameView(arcade.View):
         self.spawn_timer = 0
         self.hud = None
         self.artifact_manager = ArtifactManager()
+        self.enemy_manager = None
 
     def setup(self):
         self.player_list = arcade.SpriteList()
@@ -31,6 +33,9 @@ class GameView(arcade.View):
         self.wave_manager = DummyWaveManager()  # Replace with real one later
         self.coin_count = 0  # Start with zero coins
         
+        # Initialize enemy manager
+        self.enemy_manager = EnemyManager(self.player)
+
         # Initialize artifact system
         self.artifact_manager = ArtifactManager()
         self.artifact_list = arcade.SpriteList()
@@ -51,6 +56,7 @@ class GameView(arcade.View):
         self.orb_manager.draw()
         self.artifact_list.draw()
         self.coin_list.draw()
+        self.enemy_manager.draw()  # Just before HUD
         self.hud.draw()
 
     def on_update(self, delta_time: float):
@@ -70,6 +76,10 @@ class GameView(arcade.View):
         self.orb_manager.check_collisions(self.player, self.apply_effect)
         self.artifact_spawner.try_spawn_dash()
         self.artifact_manager.check_collision(self.player)
+
+        # Update enemy manager
+        self.enemy_manager.update(delta_time)
+        self.enemy_manager.check_collisions(self.player)
 
         # Update coin system
         self.coin_list.update_animation()
