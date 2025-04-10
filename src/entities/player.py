@@ -23,6 +23,7 @@ class Player(arcade.Sprite):
         self.current_hearts = 3  # Starting health
         self.gold_hearts = 0
         self.score = 0           # Starting score
+        self.coin_count = 0
         self.status_effects = StatusEffectManager(self)
 
     def update(self, delta_time: float = 1/60):

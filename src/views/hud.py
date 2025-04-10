@@ -12,6 +12,7 @@ class HUD:
             'gray': "assets/hud/hearts/heart_empty.png",
             'gold': "assets/hud/hearts/heart_gold.png"
         }
+        self.coin_texture = arcade.load_texture("assets/coins/bank.png")
 
     def draw_centered_texture(self, center_x, center_y, size, texture_path):
         sprite = arcade.Sprite(texture_path, scale=size / 64)
@@ -22,6 +23,24 @@ class HUD:
         temp_list = arcade.SpriteList()
         temp_list.append(sprite)
         temp_list.draw()
+
+    def draw_coin_counter(self):
+        icon_x = SCREEN_WIDTH - 80
+        icon_y = 30
+
+        # Draw coin icon using a sprite with scaled down size
+        coin_sprite = arcade.Sprite(self.coin_texture, scale=0.035)
+        coin_sprite.center_x = icon_x
+        coin_sprite.center_y = icon_y
+
+        # Add to a temporary SpriteList and draw it
+        temp_list = arcade.SpriteList()
+        temp_list.append(coin_sprite)
+        temp_list.draw()
+
+        # Draw coin count
+        arcade.draw_text(f"{self.player.coin_count}", icon_x + 40, icon_y - 8,
+                         arcade.color.GOLD, 18, font_name=FONT_NAME)
 
     def draw(self):
         # Top center: Wave and time left
@@ -56,8 +75,7 @@ class HUD:
                              arcade.color.WHITE, HUD_FONT_SIZE_SMALL, anchor_x="right", font_name=FONT_NAME)
 
         # Bottom right: Coins
-        arcade.draw_text(f"Coins: {self.coin_count}", SCREEN_WIDTH - 10, 10,
-                         arcade.color.GOLD, HUD_FONT_SIZE_MEDIUM, anchor_x="right", font_name=FONT_NAME)
+        self.draw_coin_counter()
         
         # Bottom left: Artifact status
         if "dash" in self.artifact_manager.active_artifacts:

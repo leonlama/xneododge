@@ -5,6 +5,8 @@ from src.systems.orb_manager import OrbManager
 from src.views.hud import HUD
 from src.mechanics.artifacts.artifact_manager import ArtifactManager
 from src.systems.artifact_spawner import ArtifactSpawner
+from src.systems.coin_spawner import CoinSpawner
+from src.systems.coin_manager import CoinManager
 
 class DummyWaveManager:
     def __init__(self):
@@ -38,11 +40,17 @@ class GameView(arcade.View):
         # Initialize HUD after artifact_manager is set up
         self.hud = HUD(self.player, self.wave_manager, self.coin_count, self.artifact_manager)
 
+        # Initialize coin system
+        self.coin_list = arcade.SpriteList()
+        self.coin_spawner = CoinSpawner(self.coin_list)
+        self.coin_manager = CoinManager(self.coin_list)
+
     def on_draw(self):
         self.clear()
         self.player_list.draw()
         self.orb_manager.draw()
         self.artifact_list.draw()
+        self.coin_list.draw()
         self.hud.draw()
 
     def on_update(self, delta_time: float):
@@ -62,6 +70,11 @@ class GameView(arcade.View):
         self.orb_manager.check_collisions(self.player, self.apply_effect)
         self.artifact_spawner.try_spawn_dash()
         self.artifact_manager.check_collision(self.player)
+
+        # Update coin system
+        self.coin_list.update_animation()
+        self.coin_spawner.update(delta_time)
+        self.coin_manager.check_collision(self.player)
 
     def apply_effect(self, orb_type):
         print(f"Collected orb: {orb_type}")
