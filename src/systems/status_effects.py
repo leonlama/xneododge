@@ -17,8 +17,13 @@ class StatusEffectManager:
             self._add_timed_effect(effect_type, kwargs["duration"], lambda: setattr(self.player, "score_multiplier", self.player.score_multiplier / kwargs["magnitude"]))
 
         elif effect_type == "cooldown":
-            self.player.artifact_cooldown_multiplier *= (1 - kwargs["reduction"])
-            self._add_timed_effect(effect_type, kwargs["duration"], lambda: setattr(self.player, "artifact_cooldown_multiplier", self.player.artifact_cooldown_multiplier / (1 - kwargs["reduction"])))
+            reduction = 0.2  # 20% faster
+            duration = 10
+            self.active_effects["cooldown"] = {
+                "reduction": reduction,
+                "time_left": duration
+            }
+            self.player.cooldown_modifier = 1.0 - reduction
 
         elif effect_type == "shield":
             self.player.has_shield = True
@@ -46,7 +51,7 @@ class StatusEffectManager:
             elif effect == "multiplier":
                 self.player.score_multiplier = 1.0  # reset score multiplier
             elif effect == "cooldown":
-                self.player.artifact_cooldown_multiplier = 1.0  # reset cooldown multiplier
+                self.player.cooldown_modifier = 1.0  # reset cooldown modifier
             elif effect == "shield":
                 self.player.has_shield = False  # deactivate shield
             del self.active_effects[effect]

@@ -10,11 +10,11 @@ class Orb(arcade.Sprite):
     def apply_effect(self, player):
         """Apply the orb's effect to the player."""
         if self.orb_type == "speed":
-            player.status_effects.add("speed", duration=10, magnitude=0.35)
+            player.status_effects.add("speed", duration=10, magnitude=0.1)
         elif self.orb_type == "multiplier":
-            player.status_effects.add("multiplier", duration=10, magnitude=2.0)
+            player.status_effects.add("multiplier", duration=10, magnitude=1.5)
         elif self.orb_type == "cooldown":
-            player.status_effects.add("cooldown", duration=10, reduction=0.25)
+            player.status_effects.add("cooldown", duration=10, reduction=0.2)
         elif self.orb_type == "shield":
             player.status_effects.add("shield", charges=1)
         elif self.orb_type == "red_heart":

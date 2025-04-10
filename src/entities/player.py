@@ -20,6 +20,7 @@ class Player(arcade.Sprite):
         self.speed = PLAYER_SPEED
         self.score_multiplier = 1.0
         self.artifact_cooldown_multiplier = 1.0
+        self.cooldown_modifier = 1.0  # default = no change
         self.has_shield = False
         self.max_hearts = 3      # Default max hearts (can be increased with artifacts later)
         self.current_hearts = 3  # Starting health
