@@ -10,6 +10,7 @@ from src.systems.coin_manager import CoinManager
 from src.systems.enemy_manager import EnemyManager
 from src.systems.wave_management.wave_manager import WaveManager
 from src.views.ui.wave_announcement import WaveAnnouncement
+from src.views.shop_view import ShopView 
 
 class GameView(arcade.View):
     def __init__(self):
@@ -75,6 +76,14 @@ class GameView(arcade.View):
             if not self.took_damage_this_wave:
                 self.player.restore_half_gray()
             self.took_damage_this_wave = False  # Reset for the next wave
+            
+            # Check for shop wave AFTER wave ends
+            if self.wave_manager.is_shop_wave():
+                print("🛒 Entering shop view...")
+                shop_view = ShopView(self.player, self)
+                self.window.show_view(shop_view)
+                return  # Pause start_next_wave() until the shop is done
+
             self.wave_manager.start_next_wave()
             self.wave_announcement.show_wave(self.wave_manager.current_wave, self.wave_manager.current_wave_type)
             distribution = self.wave_manager.get_spawn_recipe()

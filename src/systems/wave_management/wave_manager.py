@@ -63,3 +63,6 @@ class WaveManager:
 
     def _calculate_wave_duration(self):
         return max(10, 30 - self.current_wave * 2)
+
+    def is_shop_wave(self):
+        return self.current_wave % 5 == 0 and self.time_left == 0
