@@ -1,10 +1,12 @@
 class BaseShopItem:
-    def __init__(self, name, description, cost, icon_path=None):
+    def __init__(self, name, description, cost=5, rarity="common"):
         self.name = name
         self.description = description
         self.cost = cost
-        self.icon_path = icon_path  # Optional: could be used in the shop view
-        self.purchased = False
+        self.rarity = rarity
+
+    def apply(self, player):
+        self.apply_effect(player)
 
     def apply_effect(self, player, game_view):
         """Override this in child classes to apply effect to the player or game."""

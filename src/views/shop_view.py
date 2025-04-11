@@ -5,6 +5,12 @@ from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_NAME
 from src.shop.store_manager import StoreManager
 from src.systems.star import StarManager
 
+RARITY_COLORS = {
+    "common": arcade.color.LIGHT_GRAY[:3],
+    "uncommon": arcade.color.LIGHT_GREEN[:3],
+    "rare": arcade.color.LIGHT_BLUE[:3],
+    "legendary": arcade.color.GOLD[:3],
+}
 
 class ShopView(arcade.View):
     def __init__(self, player, coin_manager, return_callback, current_wave_number):
@@ -47,31 +53,45 @@ class ShopView(arcade.View):
 
         for index, item in enumerate(self.shop_items):
             x = start_x + index * spacing
-            y = base_y + math.sin(elapsed * 2 + index) * 5  # small vertical float
+            y = base_y + math.sin(elapsed * 2 + index) * 5
 
-            # Box using lrtb_rectangle_filled
+            # Determine dimensions
             top = y + 110
             bottom = y - 110
             left = x - 100
             right = x + 100
+
+            # Determine rarity color
+            rarity_color = RARITY_COLORS.get(item.rarity, arcade.color.WHITE[:3])
+
+            # Item background
             arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.DARK_BLUE)
 
-            # Highlight hovered item
-            outline_color = arcade.color.LIGHT_GREEN if index == self.hovered_index else arcade.color.WHITE
+            # Glow effect for legendary
+            if item.rarity == "legendary":
+                glow_alpha = int((math.sin(elapsed * 5) + 1) * 50)
+                glow_color = (*rarity_color, glow_alpha)
+                for radius in range(115, 125, 2):
+                    arcade.draw_circle_outline(x, y, radius, glow_color, 1)
+
+            # Outline
+            outline_color = arcade.color.LIGHT_GREEN if index == self.hovered_index else rarity_color
             arcade.draw_lrbt_rectangle_outline(left, right, bottom, top, outline_color, 2)
 
-            # Neon Title
-            arcade.draw_text(item.name, x, y + 90, arcade.color.ELECTRIC_BLUE, 18, anchor_x="center")
+            # Item title
+            arcade.draw_text(item.name, x, y + 90, rarity_color, 18, anchor_x="center", font_name=FONT_NAME)
 
-            # Pulsing Description
-            alpha = int((math.sin(elapsed * 3 + index) + 1) * 127.5)  # Pulsing effect
-            base_color = arcade.color.LIGHT_GRAY[:3]  # (R, G, B) only
-            text_color = (*base_color, alpha)
-            arcade.draw_text(item.description, x, y + 50, text_color, 12,
-                             width=180, align="center", anchor_x="center", anchor_y="center")
+            # Item description with pulse animation
+            alpha = int((math.sin(elapsed * 3 + index) + 1) * 127.5)
+            desc_color = (*rarity_color, alpha)
+            arcade.draw_text(item.description, x, y + 50, desc_color, 12,
+                             width=180, align="center", anchor_x="center", anchor_y="center", font_name=FONT_NAME)
 
-            # Cost (fixed for now)
-            arcade.draw_text("💰 5 coins", x, y - 60, arcade.color.GOLD, 14, anchor_x="center")
+            # Display rarity label
+            arcade.draw_text(f"[{item.rarity.upper()}]", x, y - 30, rarity_color, 12, anchor_x="center", font_name=FONT_NAME)
+
+            # Display cost
+            arcade.draw_text(f"💰 {item.cost} coins", x, y - 60, arcade.color.GOLD, 14, anchor_x="center", font_name=FONT_NAME)
 
         # Bottom instructions
         arcade.draw_text(f"Coins: {self.coin_manager.coins}", 20, 20,
