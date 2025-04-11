@@ -2,10 +2,9 @@ import arcade
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_NAME, HEART_SIZE, HEART_SPACING, HUD_FONT_SIZE_LARGE, HUD_FONT_SIZE_MEDIUM, HUD_FONT_SIZE_SMALL
 
 class HUD:
-    def __init__(self, player, wave_manager, coin_count, artifact_manager):
+    def __init__(self, player, wave_manager, artifact_manager):
         self.player = player
         self.wave_manager = wave_manager
-        self.coin_count = coin_count
         self.artifact_manager = artifact_manager
         self.heart_images = {
             'red': "assets/hud/hearts/heart.png",

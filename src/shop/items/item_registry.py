@@ -1,4 +1,4 @@
-from shop.items.health_items import HeartSnack, EmptyShell, GoldenKernel
+from src.shop.items.health_items import HeartSnack, EmptyShell, GoldenKernel
 
 ITEM_REGISTRY = {
     "health": [

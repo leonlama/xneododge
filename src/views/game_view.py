@@ -25,13 +25,14 @@ class GameView(arcade.View):
         self.enemy_manager = None
         self.wave_announcement = None
         self.took_damage_this_wave = False  # Track if player took damage this wave
+        self.shop_triggered = False  # Track if shop has been triggered
 
     def setup(self):
         self.player_list = arcade.SpriteList()
         self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, window=self.window)
         self.player_list.append(self.player)
         self.wave_manager = WaveManager()  # Use the real wave manager
-        self.coin_count = 0  # Start with zero coins
+        #self.coins = 0  # Start with zero coins
         
         # Initialize enemy manager
         self.enemy_manager = EnemyManager(self.player)
@@ -43,7 +44,7 @@ class GameView(arcade.View):
         self.artifact_spawner = ArtifactSpawner(self.artifact_list)
         
         # Initialize HUD after artifact_manager is set up
-        self.hud = HUD(self.player, self.wave_manager, self.coin_count, self.artifact_manager)
+        self.hud = HUD(self.player, self.wave_manager, self.artifact_manager)
 
         # Initialize coin system
         self.coin_list = arcade.SpriteList()
@@ -78,10 +79,11 @@ class GameView(arcade.View):
             self.took_damage_this_wave = False  # Reset for the next wave
             
             # Check for shop wave AFTER wave ends
-            if self.wave_manager.is_shop_wave():
+            if self.wave_manager.current_wave % 5 == 0 and not self.shop_triggered:
                 print("🛒 Entering shop view...")
                 shop_view = ShopView(self.player, self)
                 self.window.show_view(shop_view)
+                self.shop_triggered = True
                 return  # Pause start_next_wave() until the shop is done
 
             self.wave_manager.start_next_wave()
@@ -89,6 +91,10 @@ class GameView(arcade.View):
             distribution = self.wave_manager.get_spawn_recipe()
             self.enemy_manager.spawn_wave(distribution)
             self.wave_manager.consume_wave_trigger()
+
+            # Reset shop_triggered after starting a new wave
+            if self.wave_manager.current_wave % 5 != 0:
+                self.shop_triggered = False
 
         self.player_list.update_animation()
         self.orb_manager.update(delta_time)

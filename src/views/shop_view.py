@@ -1,8 +1,9 @@
 import arcade
 import random
-from shop.items.item_registry import ALL_ITEMS
+from src.shop.items.item_registry import ALL_ITEMS
 
 SHOP_FONT = "Kenney Pixel.ttf"
+BANNER_FONT = "Kenney Future"
 
 class ShopView(arcade.View):
     def __init__(self, player, game_view):
@@ -22,6 +23,17 @@ class ShopView(arcade.View):
         arcade.draw_text("🛒 NEO SHOP", self.window.width // 2, self.window.height - 80,
                          arcade.color.YELLOW, 40, anchor_x="center", font_name=SHOP_FONT)
 
+        # Draw shop banner
+        arcade.draw_text(
+            "🛒 CHOOSE YOUR BLESSING",
+            self.window.width // 2,
+            self.window.height - 120,
+            arcade.color.YELLOW_ORANGE,
+            28,
+            anchor_x="center",
+            font_name=BANNER_FONT
+        )
+
         # Draw items
         start_x = self.window.width // 4
         for index, item in enumerate(self.items_for_sale):
@@ -29,12 +41,32 @@ class ShopView(arcade.View):
             y = self.window.height // 2
 
             # Item Box
-            arcade.draw_rectangle_filled(x, y, 220, 250, arcade.color.BLACK_OLIVE)
-            arcade.draw_rectangle_outline(x, y, 220, 250, arcade.color.LIGHT_GREEN, 2)
+            half_width = 110
+            half_height = 125
+            arcade.draw_lrbt_rectangle_filled(
+                x - half_width, x + half_width,
+                y - half_height, y + half_height,
+                arcade.color.BLACK_OLIVE
+            )
+
+            # Replacement for draw_rectangle_outline
+            half_width_outline = 220 // 2
+            half_height_outline = 250 // 2
+
+            left = x - half_width_outline
+            right = x + half_width_outline
+            top = y + half_height_outline
+            bottom = y - half_height_outline
+
+            line_thickness = 2
+            arcade.draw_line(left, top, right, top, arcade.color.LIGHT_GREEN, line_thickness)
+            arcade.draw_line(right, top, right, bottom, arcade.color.LIGHT_GREEN, line_thickness)
+            arcade.draw_line(right, bottom, left, bottom, arcade.color.LIGHT_GREEN, line_thickness)
+            arcade.draw_line(left, bottom, left, top, arcade.color.LIGHT_GREEN, line_thickness)
 
             # Item Title
             arcade.draw_text(f"{index+1}. {item.name}", x, y + 80,
-                             arcade.color.NEON_YELLOW, 18, width=180, align="center", anchor_x="center")
+                             arcade.color.GOLD, 18, width=180, align="center", anchor_x="center")
 
             # Description
             arcade.draw_text(item.description, x, y + 20,
@@ -45,7 +77,7 @@ class ShopView(arcade.View):
                              arcade.color.GOLD, 16, anchor_x="center")
 
         # Coin count
-        arcade.draw_text(f"Coins: {self.player.coins}", 20, 20, arcade.color.GOLD, 18)
+        arcade.draw_text(f"Coins: {self.player.coin_count}", 20, 20, arcade.color.GOLD, 18)
 
         # Hint
         arcade.draw_text("Press [1] [2] [3] to buy, [Esc] to skip",
@@ -66,8 +98,8 @@ class ShopView(arcade.View):
             index = index_map[key]
             if index < len(self.items_for_sale):
                 item = self.items_for_sale[index]
-                if not item.purchased and self.player.coins >= item.cost:
-                    self.player.coins -= item.cost
+                if not item.purchased and self.player.coin_count >= item.cost:
+                    self.player.coin_count -= item.cost
                     item.purchased = True
                     item.apply_effect(self.player, self.game_view)
                     print(f"✅ Purchased: {item.name}")
