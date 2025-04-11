@@ -49,7 +49,7 @@ class GameView(arcade.View):
         # Initialize coin system
         self.coin_list = arcade.SpriteList()
         self.coin_spawner = CoinSpawner(self.coin_list)
-        self.coin_manager = CoinManager(self.coin_list)
+        self.coin_manager = CoinManager(self.player, self.coin_list)
 
         # Initialize wave announcement
         self.wave_announcement = WaveAnnouncement()
@@ -81,7 +81,7 @@ class GameView(arcade.View):
             # Check for shop wave AFTER wave ends
             if self.wave_manager.current_wave % 5 == 0 and not self.shop_triggered:
                 print("🛒 Entering shop view...")
-                shop_view = ShopView(self.player, self)
+                shop_view = ShopView(self.player, self.coin_manager, self.return_from_shop)
                 self.window.show_view(shop_view)
                 self.shop_triggered = True
                 return  # Pause start_next_wave() until the shop is done
@@ -151,3 +151,7 @@ class GameView(arcade.View):
         if self.artifact_manager.handle_key_press(key, self.player):
             print("Artifact used!")
         # Handle other keys as needed (movement, etc.)
+
+    def return_from_shop(self):
+        self.setup_wave_after_shop = True  # Optional flag if needed
+        self.window.show_view(self)

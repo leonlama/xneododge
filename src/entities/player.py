@@ -27,13 +27,17 @@ class Player(arcade.Sprite):
         self.gold_hearts = 0
         self.partial_heart = False
         self.score = 0           # Starting score
-        self.coin_count = 0
+        self.coin_count = 0      # Add this in __init__ if not already there
         self.status_effects = StatusEffectManager(self)
         self.invincible = False
         self.invincible_timer = 0
         self.invincible_duration = 1.0  # 1 second
         self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
         self.extra_heart_slots = 0  # Start with none
+
+    def collect_coin(self, amount: int = 1):
+        self.coin_count += amount
+        print(f"🪙 Collected coin! Total: {self.coin_count}")
 
     def update(self, delta_time: float = 1/60):
         self.update_movement(delta_time)
