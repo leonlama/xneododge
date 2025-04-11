@@ -97,15 +97,14 @@ class GameView(arcade.View):
 
         # Update enemy bullets and check for collision
         self.enemy_manager.bullet_list.update()
-        for bullet in self.enemy_manager.bullet_list:
-            if arcade.check_for_collision(bullet, self.player):
-                self.player.take_damage(0.5)
-                bullet.remove_from_sprite_lists()
+        self.enemy_manager.check_bullet_collisions(self.player)
 
         # Spawn enemies based on wave manager's recipe if not already spawned this wave
         if self.wave_manager.should_spawn_wave():
-            recipe = self.wave_manager.get_spawn_recipe()
-            self.enemy_manager.spawn_from_recipe(recipe)
+            self.enemy_manager.trim_enemies_for_new_wave()
+            distribution = self.wave_manager.get_spawn_recipe()
+            self.enemy_manager.spawn_wave(distribution)
+            self.wave_announcement.show_wave(self.wave_manager.current_wave, self.wave_manager.current_wave_type)
 
         if self.wave_announcement:
             self.wave_announcement.update(delta_time)

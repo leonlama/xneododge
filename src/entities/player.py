@@ -123,26 +123,25 @@ class Player(arcade.Sprite):
 
         self.invincible = True
         self.invincible_timer = 0
-        print("⚔️ Player takes damage!")
+        print(f"⚔️ Player takes {amount} damage!")
 
         if self.golden_hearts > 0:
-            self.golden_hearts -= 1
-            print("💛 Golden heart lost!")
-            return
+            self.golden_hearts -= amount
+            if self.golden_hearts < 0:
+                remainder = -self.golden_hearts
+                self.golden_hearts = 0
+                self.current_hearts -= remainder
+        else:
+            self.current_hearts -= amount
 
-        if self.partial_heart:
-            self.partial_heart = False
-            return
+        # Clamp to zero
+        self.current_hearts = max(self.current_hearts, 0)
 
-        if self.current_hearts > 0:
-            self.current_hearts -= 1
-            print("❤️ Red heart lost!")
-            return
+        # Handle partial heart for HUD display
+        self.partial_heart = self.current_hearts % 1 != 0
 
-        print("💀 Player dead")  # Handle game over here
+        if self.current_hearts == 0:
+            print("💀 Player dead")  # Handle game over here
 
         # Clamp health
-        self.current_hearts = max(0, self.current_hearts)
         self.golden_hearts = max(0, self.golden_hearts)
-
-        # TODO: Trigger half-heart visual logic if amount == 0.5

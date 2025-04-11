@@ -72,3 +72,24 @@ class EnemyManager:
                     enemy.explode()
                 else:
                     player.take_damage(1.0)  # For melee enemies
+
+    def check_bullet_collisions(self, player):
+        hit_list = arcade.check_for_collision_with_list(player, self.bullet_list)
+        for bullet in hit_list:
+            player.take_damage(0.5)
+            bullet.remove_from_sprite_lists()
+
+    def trim_enemies_for_new_wave(self):
+        """Keep 1–3 random enemies, remove the rest before the new wave spawns."""
+        keep_count = random.randint(1, 3)
+        if len(self.enemy_list) > keep_count:
+            # Shuffle and keep the first `keep_count`, remove the rest
+            enemies = self.enemy_list[:]
+            random.shuffle(enemies)
+            to_keep = enemies[:keep_count]
+            to_remove = enemies[keep_count:]
+
+            for enemy in to_remove:
+                enemy.remove_from_sprite_lists()
+
+            print(f"[ENEMY MANAGER] Trimmed enemies: Kept {len(to_keep)}, removed {len(to_remove)}")
