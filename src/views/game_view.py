@@ -58,6 +58,7 @@ class GameView(arcade.View):
         self.artifact_list.draw()
         self.coin_list.draw()
         self.enemy_manager.draw()  # Just before HUD
+        self.enemy_manager.bullet_list.draw()  # Draw enemy bullets
         self.hud.draw()
         if self.wave_announcement:
             self.wave_announcement.draw(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -93,6 +94,13 @@ class GameView(arcade.View):
         # Update enemy manager
         self.enemy_manager.update(delta_time)
         self.enemy_manager.check_collisions(self.player)
+
+        # Update enemy bullets and check for collision
+        self.enemy_manager.bullet_list.update()
+        for bullet in self.enemy_manager.bullet_list:
+            if arcade.check_for_collision(bullet, self.player):
+                self.player.take_damage(0.5)
+                bullet.remove_from_sprite_lists()
 
         # Spawn enemies based on wave manager's recipe if not already spawned this wave
         if self.wave_manager.should_spawn_wave():

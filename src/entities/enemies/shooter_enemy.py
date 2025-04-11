@@ -2,13 +2,15 @@ import arcade
 import random
 from src.entities.enemies.base_enemy import BaseEnemy
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.entities.enemies.bullets.enemy_bullet import EnemyBullet
 
 class ShooterEnemy(BaseEnemy):
-    def __init__(self, x, y, player):
+    def __init__(self, x, y, player, bullet_list):
         super().__init__("assets/enemies/shooter.png", x, y, player, speed=1.5, scale=0.035)
         self.shoot_timer = 0
         self.change_x = random.choice([-1, 1])
         self.change_y = random.choice([-1, 1])
+        self.bullet_list = bullet_list
 
     def update(self):
         self.center_x += self.change_x
@@ -25,4 +27,5 @@ class ShooterEnemy(BaseEnemy):
 
     def shoot(self):
         print("ShooterEnemy shoots towards player!")
-        # add projectile logic here
+        bullet = EnemyBullet(self.center_x, self.center_y, self.player.center_x, self.player.center_y)
+        self.bullet_list.append(bullet)

@@ -17,6 +17,7 @@ class EnemyManager:
             "shooter": ShooterEnemy,
             "bomber": BomberEnemy
         }
+        self.bullet_list = arcade.SpriteList()  # Initialize bullet list for shooter enemies
 
     def update(self, delta_time):
         for enemy in self.enemy_list:
@@ -56,7 +57,11 @@ class EnemyManager:
             print(f"[ERROR] Unknown enemy type: {enemy_type}")
             return
 
-        enemy = enemy_cls(x, y, self.player)
+        if enemy_type == "shooter":
+            enemy = enemy_cls(x, y, self.player, self.bullet_list)
+        else:
+            enemy = enemy_cls(x, y, self.player)
+        
         self.enemy_list.append(enemy)
         print(f"[SPAWN] {enemy_type} at ({x},{y})")
 
