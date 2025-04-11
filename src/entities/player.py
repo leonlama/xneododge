@@ -22,10 +22,10 @@ class Player(arcade.Sprite):
         self.artifact_cooldown_multiplier = 1.0
         self.cooldown_modifier = 1.0  # default = no change
         self.has_shield = False
-        self.max_hearts = 3      # Default max hearts (can be increased with artifacts later)
-        self.current_hearts = 3  # Starting health
-        self.golden_hearts = 0   # Corrected attribute name
-        self.partial_heart = False  # Added partial_heart attribute
+        self.max_heart_slots = 6  # maximum slots (gray + red hearts)
+        self.current_hearts = 3   # start with 3 red hearts
+        self.gold_hearts = 0
+        self.partial_heart = False
         self.score = 0           # Starting score
         self.coin_count = 0
         self.status_effects = StatusEffectManager(self)
@@ -33,6 +33,7 @@ class Player(arcade.Sprite):
         self.invincible_timer = 0
         self.invincible_duration = 1.0  # 1 second
         self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
+        self.extra_heart_slots = 0  # Start with none
 
     def update(self, delta_time: float = 1/60):
         self.update_movement(delta_time)
@@ -125,11 +126,11 @@ class Player(arcade.Sprite):
         self.invincible_timer = 0
         print(f"⚔️ Player takes {amount} damage!")
 
-        if self.golden_hearts > 0:
-            self.golden_hearts -= amount
-            if self.golden_hearts < 0:
-                remainder = -self.golden_hearts
-                self.golden_hearts = 0
+        if self.gold_hearts > 0:
+            self.gold_hearts -= amount
+            if self.gold_hearts < 0:
+                remainder = -self.gold_hearts
+                self.gold_hearts = 0
                 self.current_hearts -= remainder
         else:
             self.current_hearts -= amount
@@ -144,4 +145,34 @@ class Player(arcade.Sprite):
             print("💀 Player dead")  # Handle game over here
 
         # Clamp health
-        self.golden_hearts = max(0, self.golden_hearts)
+        self.gold_hearts = max(0, self.gold_hearts)
+
+    def add_gray_slot(self):
+        if self.extra_heart_slots < 6:
+            self.extra_heart_slots += 1
+            self.max_heart_slots += 1
+            print("🖤 Gray heart slot added!")
+
+    def add_red_heart(self):
+        if self.current_hearts < self.max_heart_slots:
+            self.current_hearts += 1
+            print("❤️ Red heart added!")
+        elif self.partial_heart:
+            self.partial_heart = False
+            self.current_hearts += 1
+            print("❤️ Half heart topped up!")
+
+    def add_gold_heart(self):
+        self.gold_hearts += 1
+        print("💛 Golden heart added!")
+
+    def restore_half_gray(self):
+        """Called by Zen Protocol at start of new wave."""
+        if self.current_hearts < self.max_heart_slots:
+            if self.partial_heart:
+                self.current_hearts += 1
+                self.partial_heart = False
+                print("🖤 Half heart healed to full!")
+            else:
+                self.partial_heart = True
+                print("🖤 Gained 0.5 heart!")

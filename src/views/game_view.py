@@ -23,6 +23,7 @@ class GameView(arcade.View):
         self.artifact_manager = ArtifactManager()
         self.enemy_manager = None
         self.wave_announcement = None
+        self.took_damage_this_wave = False  # Track if player took damage this wave
 
     def setup(self):
         self.player_list = arcade.SpriteList()
@@ -71,6 +72,9 @@ class GameView(arcade.View):
         self.wave_manager.update(delta_time)
 
         if self.wave_manager._should_start_next_wave:
+            if not self.took_damage_this_wave:
+                self.player.restore_half_gray()
+            self.took_damage_this_wave = False  # Reset for the next wave
             self.wave_manager.start_next_wave()
             self.wave_announcement.show_wave(self.wave_manager.current_wave, self.wave_manager.current_wave_type)
             distribution = self.wave_manager.get_spawn_recipe()

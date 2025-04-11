@@ -58,22 +58,28 @@ class HUD:
 
         # Top left: Hearts and score
         y_offset = SCREEN_HEIGHT - 30
+        x_offset = 30
 
-        # Draw red and gray hearts
-        for i in range(self.player.max_hearts):
-            if i < self.player.current_hearts:
-                heart_path = self.heart_images['red']
-            elif i == self.player.current_hearts and self.player.partial_heart:
-                heart_path = self.heart_images['half']
-            else:
-                heart_path = self.heart_images['gray']
+        # Draw red hearts (filled HP)
+        for i in range(int(self.player.current_hearts)):
+            self.draw_centered_texture(x_offset, y_offset, HEART_SIZE, self.heart_images['red'])
+            x_offset += HEART_SPACING
 
-            self.draw_centered_texture(30 + i * HEART_SPACING, y_offset, HEART_SIZE, heart_path)
+        # Draw half heart if needed
+        if self.player.partial_heart:
+            self.draw_centered_texture(x_offset, y_offset, HEART_SIZE, self.heart_images['half'])
+            x_offset += HEART_SPACING
+
+        # Draw gray heart slots ONLY IF player has extra
+        extra_heart_slots = self.player.max_heart_slots - int(self.player.current_hearts) - (1 if self.player.partial_heart else 0)
+        for _ in range(extra_heart_slots):
+            self.draw_centered_texture(x_offset, y_offset, HEART_SIZE, self.heart_images['gray'])
+            x_offset += HEART_SPACING
 
         # Draw golden hearts stacked next to red/gray
-        for i in range(self.player.golden_hearts):
-            x = 30 + (self.player.max_hearts + i) * HEART_SPACING
-            self.draw_centered_texture(x, y_offset, HEART_SIZE, self.heart_images['gold'])
+        for i in range(self.player.gold_hearts):
+            self.draw_centered_texture(x_offset, y_offset, HEART_SIZE, self.heart_images['gold'])
+            x_offset += HEART_SPACING
 
         arcade.draw_text(f"Score: {self.player.score}", 10, y_offset - 35,
                          arcade.color.WHITE, HUD_FONT_SIZE_SMALL, font_name=FONT_NAME)
