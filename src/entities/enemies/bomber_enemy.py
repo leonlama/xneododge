@@ -4,8 +4,7 @@ from src.entities.enemies.base_enemy import BaseEnemy
 
 class BomberEnemy(BaseEnemy):
     def __init__(self, x, y, player):
-        super().__init__("assets/enemies/bomber.png", x, y, speed=0.5, scale=0.035)
-        self.player = player
+        super().__init__("assets/enemies/bomber.png", x, y, player, speed=0.5, scale=0.035)
         self.explode_range = 60
         self.change_x = random.choice([-1, 1])
         self.change_y = random.choice([-1, 1])

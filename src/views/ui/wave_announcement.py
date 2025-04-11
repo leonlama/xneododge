@@ -1,17 +1,23 @@
 import arcade
 
 class WaveAnnouncement:
-    def __init__(self, message: str, duration: float = 2.5):
-        self.message = message
+    def __init__(self, duration: float = 2.5):
+        self.message = ""
         self.total_duration = duration
         self.timer = 0
+        self.visible = False
+        self.fade_delay = 1.0  # Increased delay before fade starts
+
+    def show_wave(self, wave_number, wave_type):
+        self.message = f"Wave {wave_number}: {wave_type}"
+        self.timer = 0
         self.visible = True
-        self.fade_delay = 1.0  # Delay before fade starts
 
     def update(self, delta_time: float):
-        self.timer += delta_time
-        if self.timer > self.total_duration:
-            self.visible = False
+        if self.visible:
+            self.timer += delta_time
+            if self.timer > self.total_duration:
+                self.visible = False
 
     def draw(self, screen_width, screen_height):
         if not self.visible:

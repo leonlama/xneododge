@@ -3,8 +3,7 @@ import arcade
 
 class ChaserEnemy(BaseEnemy):
     def __init__(self, x, y, player):
-        super().__init__("assets/enemies/chaser.png", x, y, speed=2.0)
-        self.player = player
+        super().__init__("assets/enemies/chaser.png", x, y, player, speed=2.0, scale=0.035)
 
     def update(self):
         dx = self.player.center_x - self.center_x

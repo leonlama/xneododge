@@ -48,6 +48,9 @@ class GameView(arcade.View):
         self.coin_spawner = CoinSpawner(self.coin_list)
         self.coin_manager = CoinManager(self.coin_list)
 
+        # Initialize wave announcement
+        self.wave_announcement = WaveAnnouncement()
+
     def on_draw(self):
         self.clear()
         self.player_list.draw()
@@ -65,6 +68,13 @@ class GameView(arcade.View):
 
         # Update wave manager
         self.wave_manager.update(delta_time)
+
+        if self.wave_manager._should_start_next_wave:
+            self.wave_manager.start_next_wave()
+            self.wave_announcement.show_wave(self.wave_manager.current_wave, self.wave_manager.current_wave_type)
+            distribution = self.wave_manager.get_spawn_recipe()
+            self.enemy_manager.spawn_wave(distribution)
+            self.wave_manager.consume_wave_trigger()
 
         self.player_list.update_animation()
         self.orb_manager.update(delta_time)
@@ -88,11 +98,6 @@ class GameView(arcade.View):
         if self.wave_manager.should_spawn_wave():
             recipe = self.wave_manager.get_spawn_recipe()
             self.enemy_manager.spawn_from_recipe(recipe)
-
-        if self.wave_manager.start_next_wave:
-            wave_type = self.wave_manager.current_wave_type
-            self.wave_announcement = WaveAnnouncement(f"Wave {self.wave_manager.current_wave}: {wave_type}")
-            self.wave_manager.consume_wave_trigger()
 
         if self.wave_announcement:
             self.wave_announcement.update(delta_time)

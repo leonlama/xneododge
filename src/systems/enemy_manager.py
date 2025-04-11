@@ -10,47 +10,55 @@ from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 class EnemyManager:
     def __init__(self, player):
         self.enemy_list = arcade.SpriteList()
-        # self.spawn_timer = 0
-        # self.spawn_interval = 5.0  # seconds
         self.player = player
+        self.enemy_types = {
+            "chaser": ChaserEnemy,
+            "wanderer": WandererEnemy,
+            "shooter": ShooterEnemy,
+            "bomber": BomberEnemy
+        }
 
     def update(self, delta_time):
-        # self.spawn_timer += delta_time
-        # if self.spawn_timer >= self.spawn_interval:
-        #     self.spawn_random_enemy()
-        #     self.spawn_timer = 0
-
         for enemy in self.enemy_list:
             enemy.update()
 
     def draw(self):
         self.enemy_list.draw()
 
-    def spawn_random_enemy(self):
-        enemy_type = random.choice(["chaser", "wanderer", "shooter", "bomber"])
-        self.spawn_enemy(enemy_type)
-
-    def spawn_enemy(self, enemy_type):
-        x = random.randint(100, SCREEN_WIDTH - 100)
-        y = random.randint(100, SCREEN_HEIGHT - 100)
-
-        print(f"[DEBUG] Spawning enemy at ({x}, {y}) of type {enemy_type}")
-
-        if enemy_type == "chaser":
-            enemy = ChaserEnemy(x, y, self.player)
-        elif enemy_type == "wanderer":
-            enemy = WandererEnemy(x, y)
-        elif enemy_type == "shooter":
-            enemy = ShooterEnemy(x, y, self.player)
-        elif enemy_type == "bomber":
-            enemy = BomberEnemy(x, y, self.player)
-
-        self.enemy_list.append(enemy)
-
     def spawn_from_recipe(self, recipe: dict):
         for enemy_type, count in recipe.items():
             for _ in range(count):
                 self.spawn_enemy(enemy_type)
+
+    def spawn_wave(self, recipe: dict):
+        for enemy_type, count in recipe.items():
+            for _ in range(count):
+                self.spawn_enemy(enemy_type)
+
+    def spawn_enemy(self, enemy_type: str):
+        max_attempts = 10
+        for _ in range(max_attempts):
+            x = random.randint(50, SCREEN_WIDTH - 50)
+            y = random.randint(50, SCREEN_HEIGHT - 50)
+
+            if not any(arcade.get_distance_between_sprites(enemy, arcade.Sprite(center_x=x, center_y=y)) < 50 for enemy in self.enemy_list):
+                break  # Found a valid spot
+
+        enemy_class_map = {
+            "chaser": ChaserEnemy,
+            "wanderer": WandererEnemy,
+            "shooter": ShooterEnemy,
+            "bomber": BomberEnemy
+        }
+
+        enemy_cls = enemy_class_map.get(enemy_type)
+        if not enemy_cls:
+            print(f"[ERROR] Unknown enemy type: {enemy_type}")
+            return
+
+        enemy = enemy_cls(x, y, self.player)
+        self.enemy_list.append(enemy)
+        print(f"[SPAWN] {enemy_type} at ({x},{y})")
 
     def check_collisions(self, player):
         for enemy in self.enemy_list:

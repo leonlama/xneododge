@@ -4,10 +4,10 @@ from src.entities.enemies.base_enemy import BaseEnemy
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class WandererEnemy(BaseEnemy):
-    def __init__(self, x, y):
-        super().__init__("assets/enemies/wanderer.png", x, y, speed=1.5, scale=0.035)
-        self.change_x = random.choice([-2, 2])
-        self.change_y = random.choice([-2, 2])
+    def __init__(self, x, y, player):
+        super().__init__("assets/enemies/wanderer.png", x, y, player, speed=1.5, scale=0.035)
+        self.change_x = 2.0
+        self.change_y = 2.0
 
     def update(self):
         self.center_x += self.change_x
