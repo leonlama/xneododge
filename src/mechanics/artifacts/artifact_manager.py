@@ -4,7 +4,7 @@ class ArtifactManager:
     def __init__(self):
         self.active_artifacts = {}
         self.cooldowns = {}
-        self.max_cooldowns = {"dash": 5.0}  # 5s cooldown
+        self.max_cooldowns = {"dash": 5.0}  # 5s base cooldown
         self.artifact_list = None
         self.artifact_collect_sound = arcade.load_sound("assets/sounds/artifact_collect.mp3")
 
@@ -18,7 +18,7 @@ class ArtifactManager:
                 if artifact_type == "dash" and key == arcade.key.SPACE:
                     if self.cooldowns.get(artifact_type, 0) <= 0:
                         self._use_dash(player)
-                        self.cooldowns[artifact_type] = self.max_cooldowns[artifact_type]
+                        self.cooldowns[artifact_type] = self.max_cooldowns[artifact_type] * player.cooldown_modifier
                         return True
         return False
 

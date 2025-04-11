@@ -8,9 +8,7 @@ ORB_TYPES = {
     "multiplier": "assets/orbs/multiplier_orb.png",
     "cooldown": "assets/orbs/cooldown_orb.png",
     "shield": "assets/orbs/shield_orb.png",
-    "red_heart": "assets/orbs/red_heart_orb.png",
-    "gray_heart": "assets/orbs/gray_heart_orb.png",
-    "golden_heart": "assets/orbs/golden_heart_orb.png",
+    # Removed heart orbs from the spawn pool
 }
 
 class OrbManager:
