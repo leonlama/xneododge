@@ -7,6 +7,7 @@ class HeartSnack(BaseShopItem):
             description="+1 Red Heart (heals if not full)",
             cost=20
         )
+        self.rarity = "common"
 
     def apply_effect(self, player, game_view):
         player.heal(1)
@@ -18,6 +19,7 @@ class EmptyShell(BaseShopItem):
             description="+1 Gray Heart Slot",
             cost=25
         )
+        self.rarity = "uncommon"
 
     def apply_effect(self, player, game_view):
         player.max_hearts += 1  # Allows more hearts to be healed into
@@ -29,6 +31,6 @@ class GoldenKernel(BaseShopItem):
             description="+1 Golden Heart (overheal)",
             cost=40
         )
-
+        self.rarity = "rare"
     def apply_effect(self, player, game_view):
         player.gold_hearts += 1
