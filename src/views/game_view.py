@@ -81,7 +81,13 @@ class GameView(arcade.View):
             # Check for shop wave AFTER wave ends
             if self.wave_manager.current_wave % 5 == 0 and not self.shop_triggered:
                 print("🛒 Entering shop view...")
-                shop_view = ShopView(self.player, self.coin_manager, self.return_from_shop, self.wave_manager.current_wave)
+                shop_view = ShopView(
+                    player=self.player,
+                    coin_manager=self.coin_manager,
+                    return_callback=self.return_from_shop,
+                    current_wave_number=self.wave_manager.current_wave,
+                    game_view=self  # ✅ Pass game view itself
+                )
                 self.window.show_view(shop_view)
                 self.shop_triggered = True
                 return  # Pause start_next_wave() until the shop is done

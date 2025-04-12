@@ -13,12 +13,13 @@ RARITY_COLORS = {
 }
 
 class ShopView(arcade.View):
-    def __init__(self, player, coin_manager, return_callback, current_wave_number):
+    def __init__(self, player, coin_manager, return_callback, current_wave_number, game_view):
         super().__init__()
         self.player = player
         self.coin_manager = coin_manager
         self.return_callback = return_callback
         self.current_wave_number = current_wave_number
+        self.game_view = game_view  # Save it for apply_effect()
 
         # Use StarManager instead of star_list
         self.star_manager = StarManager()
@@ -91,7 +92,7 @@ class ShopView(arcade.View):
             arcade.draw_text(f"[{item.rarity.upper()}]", x, y - 30, rarity_color, 12, anchor_x="center", font_name=FONT_NAME)
 
             # Display cost
-            arcade.draw_text(f"💰 {item.cost} coins", x, y - 60, arcade.color.GOLD, 14, anchor_x="center", font_name=FONT_NAME)
+            arcade.draw_text(f"💰 {item.price} coins", x, y - 60, arcade.color.GOLD, 14, anchor_x="center", font_name=FONT_NAME)
 
         # Bottom instructions
         arcade.draw_text(f"Coins: {self.coin_manager.coins}", 20, 20,
@@ -118,9 +119,9 @@ class ShopView(arcade.View):
         if self.hovered_index is not None:
             self.selected_index = self.hovered_index
             item = self.shop_items[self.selected_index]
-            if self.coin_manager.coins >= item.cost:
-                self.coin_manager.coins -= item.cost
-                item.apply(self.player)
+            if self.coin_manager.coins >= item.price:
+                self.coin_manager.coins -= item.price
+                item.apply_effect(self.player, self.game_view)
                 print(f"✅ Bought: {item.name}")
                 self.return_to_game()
             else:
@@ -134,9 +135,9 @@ class ShopView(arcade.View):
             if index < len(self.shop_items):
                 self.selected_index = index
                 item = self.shop_items[index]
-                if self.coin_manager.coins >= item.cost:
-                    self.coin_manager.coins -= item.cost
-                    item.apply(self.player)
+                if self.coin_manager.coins >= item.price:
+                    self.coin_manager.coins -= item.price
+                    item.apply_effect(self.player, self.game_view)
                     print(f"✅ Bought: {item.name}")
                     self.return_to_game()
                 else:

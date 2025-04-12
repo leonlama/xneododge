@@ -4,10 +4,8 @@ class DummyStatusEffects:
 
     def add(self, name, **kwargs):
         self.effects[name] = kwargs
-
     def has(self, name):
         return name in self.effects
-
 class DummyPlayer:
     def __init__(self, current_hearts=3, max_hearts=3, golden_hearts=0):
         self.current_hearts = current_hearts
@@ -27,7 +25,6 @@ class DummyPlayer:
             "coin_drop_chance": 0.0,
             "absorb_chance": 0.0
         }
-    
     def heal(self, amount):
         self.current_hearts = min(self.max_hearts, self.current_hearts + amount)
     

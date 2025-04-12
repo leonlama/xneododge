@@ -9,6 +9,10 @@ class CoinManager:
     @property
     def coins(self):
         return self.player.coin_count
+        
+    @coins.setter
+    def coins(self, value):
+        self.player.coin_count = max(0, value)  # prevent negative coins
 
     def check_collision(self, player):
         for coin in arcade.check_for_collision_with_list(player, self.coin_list):

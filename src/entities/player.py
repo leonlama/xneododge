@@ -29,7 +29,7 @@ class Player(arcade.Sprite):
         self.golden_hearts = 0    # Added to fix the attribute error
         self.partial_heart = False
         self.score = 0           # Starting score
-        self.coin_count = 0      # Add this in __init__ if not already there
+        self.coin_count = 100      # coins
         self.status_effects = StatusEffectManager(self)
         self.invincible = False
         self.invincible_timer = 0
