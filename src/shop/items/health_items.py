@@ -2,36 +2,21 @@ from src.shop.items.base import BaseShopItem
 
 class HeartSnack(BaseShopItem):
     def __init__(self):
-        super().__init__(
-            name="Heart Snack",
-            description="+1 Red Heart (heals if not full)",
-            cost=20,
-            rarity="common"
-        )
+        super().__init__("Heart Snack", "Restore 1 red heart.", 25, rarity="common")
 
     def apply_effect(self, player, game_view):
         player.heal(1)
 
 class EmptyShell(BaseShopItem):
     def __init__(self):
-        super().__init__(
-            name="Empty Shell",
-            description="+1 Gray Heart Slot",
-            cost=25,
-            rarity="uncommon"
-        )
+        super().__init__("Empty Shell", "Gain 1 max gray heart slot.", 30, rarity="common")
 
     def apply_effect(self, player, game_view):
-        player.max_hearts += 1  # Allows more hearts to be healed into
+        player.max_gray_hearts += 1
 
 class GoldenKernel(BaseShopItem):
     def __init__(self):
-        super().__init__(
-            name="Golden Kernel",
-            description="+1 Golden Heart (overheal)",
-            cost=40,
-            rarity="rare"
-        )
+        super().__init__("Golden Kernel", "Gain 1 golden heart (overheal).", 40, rarity="uncommon")
 
     def apply_effect(self, player, game_view):
-        player.gold_hearts += 1
+        player.add_golden_heart()

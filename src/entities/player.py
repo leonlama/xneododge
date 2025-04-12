@@ -1,5 +1,6 @@
 import arcade
 import math
+import random
 from src.config import PLAYER_SCALE, PLAYER_SPRITE_PATH, PLAYER_SPEED
 from src.systems.status_effects import StatusEffectManager
 
@@ -34,6 +35,13 @@ class Player(arcade.Sprite):
         self.invincible_duration = 1.0  # 1 second
         self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
         self.extra_heart_slots = 0  # Start with none
+        self.permanent_effects = {
+            "cooldown_reduction": 0.0,
+            "movement_speed": 0.0,
+            "orb_spawn_chance": 0.0,
+            "coin_drop_chance": 0.0,
+            "absorb_chance": 0.0
+        }
 
     def collect_coin(self, amount: int = 1):
         self.coin_count += amount
@@ -60,8 +68,10 @@ class Player(arcade.Sprite):
         DEADZONE = 2
 
         if distance > DEADZONE:
-            move_x = (dx / distance) * self.speed
-            move_y = (dy / distance) * self.speed
+            # Apply permanent movement speed bonus
+            adjusted_speed = self.speed * (1 + self.permanent_effects["movement_speed"])
+            move_x = (dx / distance) * adjusted_speed
+            move_y = (dy / distance) * adjusted_speed
             self.center_x += move_x * delta_time
             self.center_y += move_y * delta_time
             self.last_dx = dx / distance
@@ -114,6 +124,12 @@ class Player(arcade.Sprite):
         """Apply damage to the player."""
         if self.invincible:
             return  # Skip if invincible
+
+        # Check for absorption chance
+        if self.permanent_effects["absorb_chance"] > 0:
+            if random.random() < self.permanent_effects["absorb_chance"]:
+                print("🛡️ Damage absorbed by Absorption Module!")
+                return
 
         if "shield" in self.status_effects.active_effects:
             if self.status_effects.active_effects["shield"]["charges"] > 0:

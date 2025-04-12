@@ -17,8 +17,8 @@ class StatusEffectManager:
             self._add_timed_effect(effect_type, kwargs["duration"], lambda: setattr(self.player, "score_multiplier", self.player.score_multiplier / kwargs["magnitude"]))
 
         elif effect_type == "cooldown":
-            reduction = 0.2  # 20% faster
-            duration = 10
+            reduction = kwargs.get("reduction", 0.2)  # Default 20% faster
+            duration = kwargs.get("duration", 10)
             self.active_effects["cooldown"] = {
                 "reduction": reduction,
                 "time_left": duration
@@ -29,6 +29,26 @@ class StatusEffectManager:
             self.player.has_shield = True
             self.active_effects["shield"] = {"charges": kwargs["charges"]}
             print("Shield activated!")
+            
+        elif effect_type == "ghost_dash":
+            duration = kwargs.get("duration", 1.5)
+            self.active_effects["ghost_dash"] = {
+                "duration": duration,
+                "active": False  # Will be set to True when dash is used
+            }
+            print("Ghost Dash ready!")
+            
+        elif effect_type == "second_chance":
+            self.active_effects["second_chance"] = {
+                "used": False
+            }
+            print("Second Chance active!")
+            
+        elif effect_type == "artifact_insurance":
+            self.active_effects["artifact_insurance"] = {
+                "used": False
+            }
+            print("Artifact Insurance active!")
 
     def _add_timed_effect(self, effect_name, duration, on_expire):
         self.active_effects[effect_name] = {
@@ -64,7 +84,13 @@ class StatusEffectManager:
             elif effect_type == "multiplier":
                 lines.append(f"Score x{data.get('magnitude', 1)} ({int(data.get('time', 0))}s)")
             elif effect_type == "cooldown":
-                lines.append(f"Cooldown -{int(data.get('reduction', 0) * 100)}% ({int(data.get('time', 0))}s)")
+                lines.append(f"Cooldown -{int(data.get('reduction', 0) * 100)}% ({int(data.get('time_left', 0))}s)")
             elif effect_type == "shield":
                 lines.append(f"Shield Active ({data.get('charges', 1)} charges)")
+            elif effect_type == "ghost_dash":
+                lines.append(f"Ghost Dash Ready")
+            elif effect_type == "second_chance":
+                lines.append(f"Second Chance Active")
+            elif effect_type == "artifact_insurance":
+                lines.append(f"Artifact Insurance Active")
         return lines
