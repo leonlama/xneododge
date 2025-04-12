@@ -1,8 +1,8 @@
 class BaseShopItem:
-    def __init__(self, name, description, cost=5, rarity="common"):
+    def __init__(self, name, description, price=0, rarity="common"):
         self.name = name
         self.description = description
-        self.cost = cost
+        self.price = price
         self.rarity = rarity
 
     def apply(self, player):
