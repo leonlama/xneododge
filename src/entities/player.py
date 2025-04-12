@@ -26,6 +26,7 @@ class Player(arcade.Sprite):
         self.max_heart_slots = 6  # maximum slots (gray + red hearts)
         self.current_hearts = 3   # start with 3 red hearts
         self.gold_hearts = 0
+        self.golden_hearts = 0    # Added to fix the attribute error
         self.partial_heart = False
         self.score = 0           # Starting score
         self.coin_count = 0      # Add this in __init__ if not already there
@@ -184,7 +185,11 @@ class Player(arcade.Sprite):
 
     def add_gold_heart(self):
         self.gold_hearts += 1
-        print("💛 Golden heart added!")
+        print("💛 Golden heart added! (addgoldheart)")
+        
+    def add_golden_heart(self):
+        self.golden_hearts += 1
+        print("💛 Golden heart added! (addgoldenheart)")
 
     def restore_half_gray(self):
         """Called by Zen Protocol at start of new wave."""

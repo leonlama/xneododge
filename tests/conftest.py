@@ -20,12 +20,22 @@ class DummyPlayer:
         self.orb_spawn_boost = 0.0
         self.coin_drop_boost = 0.0
         self.absorption_chance = 0.0
+        self.permanent_effects = {
+            "cooldown_reduction": 0.0,
+            "movement_speed": 0.0,
+            "orb_spawn_chance": 0.0,
+            "coin_drop_chance": 0.0,
+            "absorb_chance": 0.0
+        }
     
     def heal(self, amount):
         self.current_hearts = min(self.max_hearts, self.current_hearts + amount)
     
     def add_golden_heart(self):
         self.golden_hearts += 1
+        
+    def add_max_heart(self):
+        self.max_hearts += 1
 
 class DummyWaveManager:
     def __init__(self):
