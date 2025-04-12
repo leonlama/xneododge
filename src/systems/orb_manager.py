@@ -42,6 +42,6 @@ class OrbManager:
     def check_collisions(self, player, apply_effect_fn):
         hit_list = arcade.check_for_collision_with_list(player, self.orb_list)
         for orb in hit_list:
-            orb.apply_effect(player)
+            orb.apply_effect(player)  # Only pass `player`!
             arcade.play_sound(self.orb_collect_sound)
             orb.remove_from_sprite_lists()

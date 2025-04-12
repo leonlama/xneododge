@@ -5,10 +5,10 @@ class BaseShopItem:
         self.price = price
         self.rarity = rarity
 
-    def apply(self, player):
-        self.apply_effect(player)
+    def apply(self, player, game_view, shop_items=None):
+        self.apply_effect(player, game_view, shop_items)
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         """Override this in child classes to apply effect to the player or game."""
         raise NotImplementedError("Each shop item must implement apply_effect()")
 

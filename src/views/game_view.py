@@ -26,6 +26,8 @@ class GameView(arcade.View):
         self.wave_announcement = None
         self.took_damage_this_wave = False  # Track if player took damage this wave
         self.shop_triggered = False  # Track if shop has been triggered
+        self.mouse_x = 0  # Track mouse position for tooltips
+        self.mouse_y = 0
 
     def setup(self):
         self.player_list = arcade.SpriteList()
@@ -72,6 +74,13 @@ class GameView(arcade.View):
 
         # Update wave manager
         self.wave_manager.update(delta_time)
+
+        # Update durations of temporary items
+        self.player.active_items = [
+            (item, duration - delta_time) if duration is not None else (item, None)
+            for item, duration in self.player.active_items
+            if duration is None or duration - delta_time > 0
+        ]
 
         if self.wave_manager._should_start_next_wave:
             if not self.took_damage_this_wave:
@@ -139,7 +148,7 @@ class GameView(arcade.View):
         self.coin_spawner.update(delta_time)
         self.coin_manager.check_collision(self.player)
 
-    def apply_effect(self, orb_type):
+    def apply_effect(self, orb_type, shop_items=None):
         print(f"Collected orb: {orb_type}")
 
     def on_mouse_motion(self, x, y, dx, dy):

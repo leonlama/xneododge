@@ -37,7 +37,7 @@ class ShopView(arcade.View):
 
     def on_draw(self):
         self.clear()
-        self.star_manager.draw()  # ✨ moving stars background
+        self.star_manager.draw()  # moving stars background
 
         # Title
         arcade.draw_text("- NEO SHOP - ", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 80,
@@ -121,7 +121,8 @@ class ShopView(arcade.View):
             item = self.shop_items[self.selected_index]
             if self.coin_manager.coins >= item.price:
                 self.coin_manager.coins -= item.price
-                item.apply_effect(self.player, self.game_view)
+                item.apply(self.player, self.game_view, self.shop_items)
+                self.player.active_items.append((item, None))  # duration = None for permanent
                 print(f"✅ Bought: {item.name}")
                 self.return_to_game()
             else:
@@ -137,7 +138,8 @@ class ShopView(arcade.View):
                 item = self.shop_items[index]
                 if self.coin_manager.coins >= item.price:
                     self.coin_manager.coins -= item.price
-                    item.apply_effect(self.player, self.game_view)
+                    item.apply(self.player, self.game_view, self.shop_items)
+                    self.player.active_items.append((item, None))  # duration = None for permanent
                     print(f"✅ Bought: {item.name}")
                     self.return_to_game()
                 else:

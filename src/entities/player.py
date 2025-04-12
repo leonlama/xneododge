@@ -36,6 +36,7 @@ class Player(arcade.Sprite):
         self.invincible_duration = 1.0  # 1 second
         self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
         self.extra_heart_slots = 0  # Start with none
+        self.active_items = []  # list of tuples: (item, None) or (item, duration)
         self.permanent_effects = {
             "cooldown_reduction": 0.0,
             "movement_speed": 0.0,

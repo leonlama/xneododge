@@ -9,7 +9,7 @@ class OverclockFlask(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.status_effects.add("cooldown", duration=30, reduction=0.3)
 
 class EnergySurge(BaseShopItem):
@@ -21,7 +21,7 @@ class EnergySurge(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.status_effects.add("speed", duration=30, magnitude=0.25)
 
 class PointMagnet(BaseShopItem):
@@ -33,7 +33,7 @@ class PointMagnet(BaseShopItem):
             rarity="rare"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.status_effects.add("multiplier", duration=30, magnitude=1.5)
 
 class ShieldProtocol(BaseShopItem):
@@ -45,5 +45,5 @@ class ShieldProtocol(BaseShopItem):
             rarity="rare"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.status_effects.add("shield", charges=1)

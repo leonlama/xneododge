@@ -9,7 +9,7 @@ class CDRCore(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.permanent_effects["cooldown_reduction"] = player.permanent_effects.get("cooldown_reduction", 0) + 0.10
 
 
@@ -22,7 +22,7 @@ class MMSChip(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.permanent_effects["movement_speed"] = player.permanent_effects.get("movement_speed", 0) + 0.15
 
 
@@ -35,7 +35,7 @@ class SpawnBooster(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.permanent_effects["orb_spawn_chance"] = player.permanent_effects.get("orb_spawn_chance", 0) + 0.10
 
 
@@ -48,7 +48,7 @@ class GoldTooth(BaseShopItem):
             rarity="uncommon"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.permanent_effects["coin_drop_chance"] = player.permanent_effects.get("coin_drop_chance", 0) + 0.10
 
 
@@ -61,5 +61,5 @@ class AbsorptionModule(BaseShopItem):
             rarity="rare"
         )
 
-    def apply_effect(self, player, game_view):
+    def apply_effect(self, player, game_view, shop_items=None):
         player.permanent_effects["absorb_chance"] = player.permanent_effects.get("absorb_chance", 0) + 0.10
