@@ -1,5 +1,15 @@
 import arcade
+import math
+from pathlib import Path
 from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, FONT_NAME, HEART_SIZE, HEART_SPACING, HUD_FONT_SIZE_LARGE, HUD_FONT_SIZE_MEDIUM, HUD_FONT_SIZE_SMALL
+
+# Rarity colors for item tooltips
+RARITY_COLORS = {
+    "common": arcade.color.LIGHT_GRAY,
+    "uncommon": arcade.color.APPLE_GREEN,
+    "rare": arcade.color.BLUE_BELL,
+    "legendary": arcade.color.GOLD
+}
 
 class HUD:
     def __init__(self, player, wave_manager, artifact_manager):
@@ -13,9 +23,15 @@ class HUD:
             'half': "assets/hud/hearts/heart_half.png"
         }
         self.coin_texture = arcade.load_texture("assets/coins/bank.png")
-        self.item_icon_texture = arcade.load_texture("assets/items/placeholder.png")
+        
+        placeholder_path = "assets/items/placeholder.png"
+        if not Path(placeholder_path).exists():
+            print("[ERROR] Missing texture at:", placeholder_path)
+        self.item_icon_texture = arcade.load_texture(placeholder_path)
+        
         self.mouse_x = 0
         self.mouse_y = 0
+        self.window = arcade.get_window()
 
     def draw_centered_texture(self, center_x, center_y, size, texture_path):
         sprite = arcade.Sprite(texture_path, scale=size / 64)
@@ -26,6 +42,12 @@ class HUD:
         temp_list = arcade.SpriteList()
         temp_list.append(sprite)
         temp_list.draw()
+        
+    def draw_texture(self, x, y, size, texture):
+        sprite = arcade.Sprite(center_x=x, center_y=y)
+        sprite.texture = texture
+        sprite.scale = size / texture.width
+        sprite.draw()
 
     def draw_coin_counter(self):
         icon_x = SCREEN_WIDTH - 80
@@ -49,42 +71,51 @@ class HUD:
         if not self.player.active_items:
             return
 
-        base_x = SCREEN_WIDTH / 2
-        base_y = 80
         icon_size = 48
-        spacing = 60
-        hovered_index = None
+        padding = 20
+        y = 32  # Lower on screen
+        start_x = self.window.width // 2 - (len(self.player.active_items) * (icon_size + padding)) // 2
 
-        # Get mouse position from self.mouse_x, self.mouse_y
+        # Use tracked mouse position
         mouse_x, mouse_y = self.mouse_x, self.mouse_y
 
         for i, (item, _) in enumerate(self.player.active_items):
-            x = base_x + (i - len(self.player.active_items) / 2) * spacing
-            y = base_y
+            x = start_x + i * (icon_size + padding)
 
-            # Check for hover
-            hovered = x - icon_size / 2 <= mouse_x <= x + icon_size / 2 and y - icon_size / 2 <= mouse_y <= y + icon_size / 2
-            
-            # Draw icon
-            sprite = arcade.Sprite(scale=icon_size / self.item_icon_texture.width)
-            sprite.texture = self.item_icon_texture
-            sprite.center_x = x
-            sprite.center_y = y
-            
-            # Use a temporary SpriteList to draw the sprite
-            temp_list = arcade.SpriteList()
-            temp_list.append(sprite)
-            temp_list.draw()
+            # Draw item icon using the new draw_texture method
+            self.draw_texture(x, y, icon_size, self.item_icon_texture)
 
-            # Tooltip
-            if hovered:
+            # Hover detection
+            if (x - icon_size // 2 < mouse_x < x + icon_size // 2 and
+                y - icon_size // 2 < mouse_y < y + icon_size // 2):
+
+                # Tooltip box
+                arcade.draw_rectangle_filled(x, y + 80, 220, 65, arcade.color.BLACK + (220,))
+                
+                # Use rarity color for outline
+                outline_color = RARITY_COLORS.get(item.rarity, arcade.color.WHITE)
+                arcade.draw_rectangle_outline(x, y + 80, 220, 65, outline_color, 2)
+
+                # Item name
                 arcade.draw_text(
-                    item.name + ": " + item.description,
-                    x, y + 40,
-                    arcade.color.WHITE,
-                    12,
+                    item.name,
+                    x, y + 100,
+                    outline_color,
+                    font_size=14,
                     anchor_x="center",
                     font_name=FONT_NAME
+                )
+
+                # Description
+                arcade.draw_text(
+                    item.description,
+                    x, y + 60,
+                    arcade.color.LIGHT_GRAY,
+                    font_size=11,
+                    anchor_x="center",
+                    font_name=FONT_NAME,
+                    multiline=True,
+                    width=180
                 )
 
     def draw(self):

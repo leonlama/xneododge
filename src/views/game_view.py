@@ -95,7 +95,7 @@ class GameView(arcade.View):
                     coin_manager=self.coin_manager,
                     return_callback=self.return_from_shop,
                     current_wave_number=self.wave_manager.current_wave,
-                    game_view=self  # ✅ Pass game view itself
+                    game_view=self  # Pass game view itself
                 )
                 self.window.show_view(shop_view)
                 self.shop_triggered = True
@@ -150,8 +150,24 @@ class GameView(arcade.View):
 
     def apply_effect(self, orb_type, shop_items=None):
         print(f"Collected orb: {orb_type}")
+        
+        # If this is a shop item being applied
+        if shop_items and orb_type in shop_items:
+            item = shop_items[orb_type]
+            # For temporary items, add with duration
+            if hasattr(item, 'duration') and item.duration:
+                self.player.active_items.append((item, item.duration))
+            # For permanent items, use None as duration
+            else:
+                self.player.active_items.append((item, None))
 
     def on_mouse_motion(self, x, y, dx, dy):
+        # Track mouse position for HUD tooltips
+        self.mouse_x = x
+        self.mouse_y = y
+        self.hud.mouse_x = x
+        self.hud.mouse_y = y
+        
         if self.mouse_held:
             self.player.set_target(x, y)
 
