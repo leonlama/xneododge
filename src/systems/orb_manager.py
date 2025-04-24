@@ -1,7 +1,8 @@
 import arcade
 import random
+import time
 from src.entities.orb import Orb
-from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, ORB_SCALES
+from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, ORB_SCALES, ORB_COMBO_WINDOW, ORB_COMBO_SCORE
 
 ORB_TYPES = {
     "speed": "assets/orbs/speed_orb.png",
@@ -40,8 +41,26 @@ class OrbManager:
         self.orb_list.draw()
 
     def check_collisions(self, player, apply_effect_fn):
+        """Handle orb pickups, apply effects, and track combo bonuses."""
         hit_list = arcade.check_for_collision_with_list(player, self.orb_list)
+        current_time = time.time()
+        # Initialize combo tracking attributes if missing
+        if not hasattr(self, 'last_orb_time'):
+            self.last_orb_time = 0
+            self.combo_count = 0
         for orb in hit_list:
-            orb.apply_effect(player)  # Only pass `player`!
+            # Combo logic: reset or increment based on time window
+            if current_time - self.last_orb_time <= ORB_COMBO_WINDOW:
+                self.combo_count += 1
+            else:
+                self.combo_count = 1
+            self.last_orb_time = current_time
+            # Award combo bonus (beyond the first orb in a combo)
+            if self.combo_count > 1:
+                combo_bonus = ORB_COMBO_SCORE * (self.combo_count - 1) * player.score_multiplier
+                player.score += combo_bonus
+                print(f"🔥 Orb combo x{self.combo_count}! +{int(combo_bonus)} points")
+            # Apply the orb's primary effect
+            orb.apply_effect(player)
             arcade.play_sound(self.orb_collect_sound)
             orb.remove_from_sprite_lists()

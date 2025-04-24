@@ -4,13 +4,13 @@ import os
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "NEODODGE"
-VERSION = "v0.1.0"
+VERSION = "v3.0.0"
 
 # === Paths ===
 ASSETS_DIR = "assets"
 FONT_PATH = os.path.join(ASSETS_DIR, "fonts", "kenney_pixel.ttf")
 FONT_NAME = "Kenney Pixel"
-TITLE_MUSIC_PATH = os.path.join(ASSETS_DIR, "audio", "title.mp3")
+TITLE_MUSIC_PATH = os.path.join(ASSETS_DIR, "audio", "title.wav")
 
 # === Player ===
 PLAYER_SCALE = 0.035
@@ -39,3 +39,12 @@ HEART_SPACING = 20   # Horizontal spacing between hearts
 HUD_FONT_SIZE_LARGE = 20    # For wave numbers and important info
 HUD_FONT_SIZE_MEDIUM = 16   # For secondary information like coin count
 HUD_FONT_SIZE_SMALL = 14    # For status effects and timer
+
+# === Scoring ===
+TIME_SCORE_RATE = 1.0             # Base points per second survived
+WAVE_BONUS_MULTIPLIER = 50        # Points per wave number on completion
+COIN_SCORE_VALUE = 10             # Points awarded per coin collected
+NEAR_MISS_THRESHOLD = 30          # Pixels for close dodge detection
+NEAR_MISS_SCORE = 100             # Points for a successful close dodge
+ORB_COMBO_WINDOW = 2.0            # Seconds to chain orb pickups for combo
+ORB_COMBO_SCORE = 20              # Points per orb in combo beyond the first

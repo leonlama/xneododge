@@ -1,6 +1,6 @@
 import arcade
 from src.entities.player import Player
-from src.config import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.config import SCREEN_WIDTH, SCREEN_HEIGHT, TIME_SCORE_RATE, WAVE_BONUS_MULTIPLIER, COIN_SCORE_VALUE, NEAR_MISS_THRESHOLD, NEAR_MISS_SCORE, ORB_COMBO_WINDOW, ORB_COMBO_SCORE
 from src.systems.orb_manager import OrbManager
 from src.views.hud import HUD
 from src.mechanics.artifacts.artifact_manager import ArtifactManager
@@ -69,8 +69,10 @@ class GameView(arcade.View):
             self.wave_announcement.draw(SCREEN_WIDTH, SCREEN_HEIGHT)
 
     def on_update(self, delta_time: float):
-        # Update player (was missing, causing slow/no movement)
-        self.player.update()
+        # Update player (movement, invincibility, etc.) and award time-based score
+        self.player.update(delta_time)
+        # Time-based scoring
+        self.player.score += TIME_SCORE_RATE * delta_time * self.player.score_multiplier
 
         # Update wave manager
         self.wave_manager.update(delta_time)
@@ -101,6 +103,10 @@ class GameView(arcade.View):
                 self.shop_triggered = True
                 return  # Pause start_next_wave() until the shop is done
 
+            # Award wave completion bonus
+            bonus = self.wave_manager.current_wave * WAVE_BONUS_MULTIPLIER * self.player.score_multiplier
+            self.player.score += bonus
+            print(f"🏅 Wave {self.wave_manager.current_wave} completed! +{int(bonus)} points")
             self.wave_manager.start_next_wave()
             self.wave_announcement.show_wave(self.wave_manager.current_wave, self.wave_manager.current_wave_type)
             distribution = self.wave_manager.get_spawn_recipe()
@@ -129,8 +135,19 @@ class GameView(arcade.View):
         self.enemy_manager.update(delta_time)
         self.enemy_manager.check_collisions(self.player)
 
-        # Update enemy bullets and check for collision
+        # Update enemy bullets
         self.enemy_manager.bullet_list.update()
+        # Check for close dodges (near misses)
+        for bullet in self.enemy_manager.bullet_list:
+            # Award once per bullet when within threshold
+            if not getattr(bullet, '_near_miss_awarded', False):
+                dist = arcade.get_distance_between_sprites(bullet, self.player)
+                if 0 < dist < NEAR_MISS_THRESHOLD:
+                    score_amt = NEAR_MISS_SCORE * self.player.score_multiplier
+                    self.player.score += score_amt
+                    bullet._near_miss_awarded = True
+                    print(f"✨ Close dodge! +{int(score_amt)} points")
+        # Check for bullet hits
         self.enemy_manager.check_bullet_collisions(self.player)
 
         # Spawn enemies based on wave manager's recipe if not already spawned this wave
