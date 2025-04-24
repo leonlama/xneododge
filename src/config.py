@@ -4,7 +4,7 @@ import os
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "NEODODGE"
-VERSION = "v3.0.0"
+VERSION = "v0.3.0"
 
 # === Paths ===
 ASSETS_DIR = "assets"
