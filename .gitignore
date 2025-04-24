@@ -9,6 +9,7 @@ venv/
 env/
 .venv/
 dev_venv/
+windows_dev_venv/
 
 # Jupyter/IPython
 .ipynb_checkpoints/
