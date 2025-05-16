@@ -215,9 +215,22 @@ class Player(arcade.Sprite):
             self.active_items.append((item_name, duration))
 
     def update_effects(self, delta_time: float):
-        updated = []
-        for name, time_left in self.active_items:
-            time_left -= delta_time
-            if time_left > 0:
-                updated.append((name, time_left))
-        self.active_items = updated
+        new_active_items = []
+        for item, time_left in self.active_items:
+            if time_left is None:
+                new_active_items.append((item, None))  # Permanent item
+            else:
+                time_left -= delta_time
+                if time_left > 0:
+                    new_active_items.append((item, time_left))
+                else:
+                    print(f"[STATUS] {item} expired.")
+        self.active_items = new_active_items
+
+    def heal(self, amount: float):
+        """Heal the player by the given amount of hearts."""
+        if self.current_hearts < self.max_heart_slots:
+            self.current_hearts = min(self.current_hearts + amount, self.max_heart_slots)
+            print(f"🖤 Healed {amount} hearts. Current: {self.current_hearts}/{self.max_heart_slots}")
+        else:
+            print("🔔 Already at full health!")

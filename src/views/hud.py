@@ -81,7 +81,13 @@ class HUD:
             if i < len(all_items):
                 name, frame = all_items[i]
                 texture = arcade.load_texture("assets/items/placeholder.png")
-                arcade.draw_texture_rectangle(x, y, slot_size, slot_size, texture)
+                arcade.draw_texture_rect(
+                    texture,
+                    center_x=x,
+                    center_y=y,
+                    width=slot_size,
+                    height=slot_size
+                )
                 border_color = arcade.color.GOLD if frame == "gold" else arcade.color.SILVER
                 arcade.draw_rectangle_outline(x, y, slot_size, slot_size, border_color, 3)
             else:
@@ -130,7 +136,7 @@ class HUD:
                          arcade.color.WHITE, HUD_FONT_SIZE_SMALL, font_name=FONT_NAME)
 
         # Top right: Active effects
-        effects = self.player.status_effects.get_effect_text_lines()
+        effects = self.get_effect_text_lines()
         for i, line in enumerate(effects):
             arcade.draw_text(line, SCREEN_WIDTH - 10, SCREEN_HEIGHT - 30 - i * 20,
                              arcade.color.WHITE, HUD_FONT_SIZE_SMALL, anchor_x="right", font_name=FONT_NAME)
@@ -146,3 +152,13 @@ class HUD:
         
         # Bottom center: Active shop items
         self.draw_active_items()
+
+    def get_effect_text_lines(self):
+        lines = []
+        for name, effect in self.player.status_effects.effects.items():
+            duration = effect.get("duration")
+            if duration is not None:
+                lines.append(f"{name}: {duration:.1f}s")
+            else:
+                lines.append(name)
+        return lines

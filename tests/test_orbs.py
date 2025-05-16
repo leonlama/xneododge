@@ -2,6 +2,7 @@ import pytest
 from src.entities.orb import Orb
 from src.entities.player import Player
 from src.systems.status_effects import StatusEffectManager
+from tests.conftest import DummyPlayer  # Import DummyPlayer from conftest
 
 @pytest.fixture
 def player():
@@ -46,8 +47,8 @@ def test_gray_heart_orb_adds_slot(player, dummy_texture):
     orb.apply_effect(player)
     assert player.max_hearts == 4
 
-def test_golden_heart_orb_adds_overheart(player, dummy_texture):
-    player.gold_hearts = 0
+def test_golden_heart_orb_adds_overheart(dummy_texture):
+    player = DummyPlayer(golden_hearts=0)  # Use DummyPlayer
     orb = Orb("golden_heart", 0, 0, dummy_texture)
     orb.apply_effect(player)
-    assert player.gold_hearts == 1
+    assert player.golden_hearts == 1

@@ -14,7 +14,7 @@ class EmptyShell(BaseShopItem):
         super().__init__("Empty Shell", "Gain 1 max gray heart slot.", 30, rarity="common")
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.max_gray_hearts += 1
+        player.max_heart_slots += 1
         player.add_permanent_item(self.name)
 
 
