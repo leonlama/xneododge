@@ -1,6 +1,7 @@
 import arcade
 import math
 import random
+from typing import List, Tuple
 from src.config import PLAYER_SCALE, PLAYER_SPRITE_PATH, PLAYER_SPEED
 from src.systems.status_effects import StatusEffectManager
 
@@ -36,7 +37,8 @@ class Player(arcade.Sprite):
         self.invincible_duration = 1.0  # 1 second
         self.damage_sound = arcade.load_sound("assets/sounds/damage.wav")
         self.extra_heart_slots = 0  # Start with none
-        self.active_items = []  # list of tuples: (item, None) or (item, duration)
+        self.permanent_items: List[str] = []  # Item names for HUD display
+        self.active_items: List[Tuple[str, float]] = []  # List of (name, time remaining)
         self.permanent_effects = {
             "cooldown_reduction": 0.0,
             "movement_speed": 0.0,
@@ -51,6 +53,7 @@ class Player(arcade.Sprite):
 
     def update(self, delta_time: float = 1/60):
         self.update_movement(delta_time)
+        self.update_effects(delta_time)
         if self.invincible:
             self.invincible_timer += delta_time
             if int(self.invincible_timer * 10) % 2 == 0:
@@ -133,7 +136,7 @@ class Player(arcade.Sprite):
                 print("🛡️ Damage absorbed by Absorption Module!")
                 return
 
-        if "shield" in self.status_effects.active_effects:
+        if self.status_effects.has("shield"):
             if self.status_effects.active_effects["shield"]["charges"] > 0:
                 self.status_effects.active_effects["shield"]["charges"] -= 1
                 if self.status_effects.active_effects["shield"]["charges"] <= 0:
@@ -202,3 +205,19 @@ class Player(arcade.Sprite):
             else:
                 self.partial_heart = True
                 print("🖤 Gained 0.5 heart!")
+
+    def add_permanent_item(self, item_name: str):
+        if item_name not in self.permanent_items and len(self.permanent_items) + len(self.active_items) < 9:
+            self.permanent_items.append(item_name)
+
+    def add_temporary_item(self, item_name: str, duration: float):
+        if len(self.permanent_items) + len(self.active_items) < 9:
+            self.active_items.append((item_name, duration))
+
+    def update_effects(self, delta_time: float):
+        updated = []
+        for name, time_left in self.active_items:
+            time_left -= delta_time
+            if time_left > 0:
+                updated.append((name, time_left))
+        self.active_items = updated

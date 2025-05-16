@@ -68,55 +68,25 @@ class HUD:
                          arcade.color.GOLD, 18, font_name=FONT_NAME)
 
     def draw_active_items(self):
-        if not self.player.active_items:
-            return
+        slot_size = 48
+        margin = 8
+        start_x = self.window.width // 2 - (slot_size + margin) * 4
+        y = 64
 
-        icon_size = 48
-        padding = 20
-        y = 32  # Lower on screen
-        start_x = self.window.width // 2 - (len(self.player.active_items) * (icon_size + padding)) // 2
+        all_items = [(name, "gold") for name in self.player.permanent_items]
+        all_items += [(name, "silver") for name in self.player.active_items]
 
-        # Use tracked mouse position
-        mouse_x, mouse_y = self.mouse_x, self.mouse_y
-
-        for i, (item, _) in enumerate(self.player.active_items):
-            x = start_x + i * (icon_size + padding)
-
-            # Draw item icon using the new draw_texture method
-            self.draw_texture(x, y, icon_size, self.item_icon_texture)
-
-            # Hover detection
-            if (x - icon_size // 2 < mouse_x < x + icon_size // 2 and
-                y - icon_size // 2 < mouse_y < y + icon_size // 2):
-
-                # Tooltip box
-                arcade.draw_rectangle_filled(x, y + 80, 220, 65, arcade.color.BLACK + (220,))
-                
-                # Use rarity color for outline
-                outline_color = RARITY_COLORS.get(item.rarity, arcade.color.WHITE)
-                arcade.draw_rectangle_outline(x, y + 80, 220, 65, outline_color, 2)
-
-                # Item name
-                arcade.draw_text(
-                    item.name,
-                    x, y + 100,
-                    outline_color,
-                    font_size=14,
-                    anchor_x="center",
-                    font_name=FONT_NAME
-                )
-
-                # Description
-                arcade.draw_text(
-                    item.description,
-                    x, y + 60,
-                    arcade.color.LIGHT_GRAY,
-                    font_size=11,
-                    anchor_x="center",
-                    font_name=FONT_NAME,
-                    multiline=True,
-                    width=180
-                )
+        for i in range(9):
+            x = start_x + i * (slot_size + margin)
+            if i < len(all_items):
+                name, frame = all_items[i]
+                texture = arcade.load_texture("assets/items/placeholder.png")
+                arcade.draw_texture_rectangle(x, y, slot_size, slot_size, texture)
+                border_color = arcade.color.GOLD if frame == "gold" else arcade.color.SILVER
+                arcade.draw_rectangle_outline(x, y, slot_size, slot_size, border_color, 3)
+            else:
+                # Draw empty slot (optional)
+                pass
 
     def draw(self):
         # Top center: Wave and time left

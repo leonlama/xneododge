@@ -42,4 +42,4 @@ class MazeJammer(BaseShopItem):
 
     def apply_effect(self, player, game_view, shop_items=None):
         game_view.wave_manager.modifiers["ban_wanderer"] = 5
-        player.status_effects.add("shield", charges=1)
+        player.status_effects.apply("shield", charges=1)

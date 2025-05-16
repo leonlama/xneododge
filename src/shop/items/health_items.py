@@ -6,6 +6,8 @@ class HeartSnack(BaseShopItem):
 
     def apply_effect(self, player, game_view, shop_items=None):
         player.heal(1)
+        player.add_temporary_item(self.name, duration=None)
+
 
 class EmptyShell(BaseShopItem):
     def __init__(self):
@@ -13,6 +15,8 @@ class EmptyShell(BaseShopItem):
 
     def apply_effect(self, player, game_view, shop_items=None):
         player.max_gray_hearts += 1
+        player.add_permanent_item(self.name)
+
 
 class GoldenKernel(BaseShopItem):
     def __init__(self):
@@ -20,3 +24,4 @@ class GoldenKernel(BaseShopItem):
 
     def apply_effect(self, player, game_view, shop_items=None):
         player.add_golden_heart()
+        player.add_temporary_item(self.name, duration=None)

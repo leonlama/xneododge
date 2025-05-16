@@ -10,7 +10,8 @@ class OverclockFlask(BaseShopItem):
         )
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("cooldown", duration=30, reduction=0.3)
+        player.add_temporary_item(self.name, 30)
+        player.apply_orb_effect("cooldown")
 
 class EnergySurge(BaseShopItem):
     def __init__(self):
@@ -22,7 +23,8 @@ class EnergySurge(BaseShopItem):
         )
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("speed", duration=30, magnitude=0.25)
+        player.add_temporary_item(self.name, 30)
+        player.apply_orb_effect("speed")
 
 class PointMagnet(BaseShopItem):
     def __init__(self):
@@ -34,7 +36,8 @@ class PointMagnet(BaseShopItem):
         )
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("multiplier", duration=30, magnitude=1.5)
+        player.add_temporary_item(self.name, 30)
+        player.apply_orb_effect("multiplier")
 
 class ShieldProtocol(BaseShopItem):
     def __init__(self):
@@ -46,4 +49,5 @@ class ShieldProtocol(BaseShopItem):
         )
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("shield", charges=1)
+        player.add_temporary_item(self.name, 0)  # Duration is not applicable for shield
+        player.apply_orb_effect("shield")

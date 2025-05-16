@@ -28,6 +28,7 @@ class GameView(arcade.View):
         self.shop_triggered = False  # Track if shop has been triggered
         self.mouse_x = 0  # Track mouse position for tooltips
         self.mouse_y = 0
+        self.score = 0  # Initialize score
 
     def setup(self):
         self.player_list = arcade.SpriteList()
@@ -73,6 +74,9 @@ class GameView(arcade.View):
         self.player.update(delta_time)
         # Time-based scoring
         self.player.score += TIME_SCORE_RATE * delta_time * self.player.score_multiplier
+
+        # Update player item effects
+        self.player.update_effects(delta_time)
 
         # Update wave manager
         self.wave_manager.update(delta_time)
@@ -120,7 +124,7 @@ class GameView(arcade.View):
         self.player_list.update_animation()
         self.orb_manager.update(delta_time)
         self.artifact_manager.update(delta_time)
-        self.player.status_effects.update()
+        self.player.status_effects.update(delta_time)
 
         self.spawn_timer += delta_time
         if self.spawn_timer >= 3.0:
@@ -203,3 +207,6 @@ class GameView(arcade.View):
     def return_from_shop(self):
         self.setup_wave_after_shop = True  # Optional flag if needed
         self.window.show_view(self)
+
+    def add_score(self, amount: int):
+        self.score += amount

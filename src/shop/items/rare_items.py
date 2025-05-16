@@ -6,7 +6,7 @@ class SecondChance(BaseShopItem):
         super().__init__("Second Chance", "Revive once with 2 red hearts", 150, rarity="legendary")
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("second_chance")
+        player.status_effects.apply("second_chance")
 
 
 class GhostDash(BaseShopItem):
@@ -14,7 +14,7 @@ class GhostDash(BaseShopItem):
         super().__init__("Ghost Dash", "After dashing, you're invincible for 1.5s", 120, rarity="legendary")
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("ghost_dash", duration=1.5)
+        player.status_effects.apply("ghost_dash", duration=1.5)
 
 
 class VoidArtifact(BaseShopItem):
@@ -22,7 +22,7 @@ class VoidArtifact(BaseShopItem):
         super().__init__("Void Artifact", "All orb cooldowns -50% this wave", 110, rarity="legendary")
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("cooldown", duration=game_view.wave_manager.wave_duration, reduction=0.5)
+        player.status_effects.apply("cooldown", duration=game_view.wave_manager.wave_duration, reduction=0.5)
 
 
 class ArtifactInsurance(BaseShopItem):
@@ -30,7 +30,7 @@ class ArtifactInsurance(BaseShopItem):
         super().__init__("Artifact Insurance", "Your first artifact won't go on cooldown", 100, rarity="legendary")
 
     def apply_effect(self, player, game_view, shop_items=None):
-        player.status_effects.add("artifact_insurance")
+        player.status_effects.apply("artifact_insurance")
 
 
 class ShopResetChip(BaseShopItem):

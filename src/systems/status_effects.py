@@ -7,90 +7,74 @@ class StatusEffectManager:
         self.player = player
         self.active_effects = {}
 
-    def add(self, effect_type, **kwargs):
-        if effect_type == "speed":
-            self.player.speed *= (1 + kwargs["magnitude"])
-            self._add_timed_effect(effect_type, kwargs["duration"], lambda: setattr(self.player, "speed", self.player.speed / (1 + kwargs["magnitude"])))
-
-        elif effect_type == "multiplier":
-            self.player.score_multiplier *= kwargs["magnitude"]
-            self._add_timed_effect(effect_type, kwargs["duration"], lambda: setattr(self.player, "score_multiplier", self.player.score_multiplier / kwargs["magnitude"]))
-
-        elif effect_type == "cooldown":
-            reduction = kwargs.get("reduction", 0.2)  # Default 20% faster
-            duration = kwargs.get("duration", 10)
-            self.active_effects["cooldown"] = {
-                "reduction": reduction,
-                "time_left": duration
-            }
-            self.player.cooldown_modifier = 1.0 - reduction
-
-        elif effect_type == "shield":
-            self.player.has_shield = True
-            self.active_effects["shield"] = {"charges": kwargs["charges"]}
-            print("Shield activated!")
-            
-        elif effect_type == "ghost_dash":
-            duration = kwargs.get("duration", 1.5)
-            self.active_effects["ghost_dash"] = {
-                "duration": duration,
-                "active": False  # Will be set to True when dash is used
-            }
-            print("Ghost Dash ready!")
-            
-        elif effect_type == "second_chance":
-            self.active_effects["second_chance"] = {
-                "used": False
-            }
-            print("Second Chance active!")
-            
-        elif effect_type == "artifact_insurance":
-            self.active_effects["artifact_insurance"] = {
-                "used": False
-            }
-            print("Artifact Insurance active!")
-
-    def _add_timed_effect(self, effect_name, duration, on_expire):
+    def apply(self, effect_name: str, duration: float = 10.0, magnitude: float = 1.0, charges: int = 0):
+        """Apply or refresh a status effect. 'charges' is used for effects like 'shield'."""
         self.active_effects[effect_name] = {
-            "time": duration,
-            "on_expire": on_expire
+            "time_left": duration,
+            "magnitude": magnitude,
+            "charges": charges
         }
+        self._apply_stat_boost(effect_name, magnitude)
 
-    def update(self):
-        expired_keys = []
-        for effect, data in self.active_effects.items():
-            if "time" in data:
-                data["time"] -= 1 / 60  # assuming 60 FPS
-                if data["time"] <= 0:
-                    expired_keys.append(effect)
+    def _apply_stat_boost(self, effect_name, magnitude):
+        if effect_name == "speed":
+            self.player.speed_multiplier = 1.0 + 0.5 * magnitude
+        elif effect_name == "cooldown":
+            self.player.cooldown_multiplier = 1.0 - 0.5 * magnitude
+        elif effect_name == "multiplier":
+            self.player.score_multiplier = 1.0 + magnitude
+        elif effect_name == "shield":
+            self.player.shield_active = True
+        # Add more if needed
 
-        for effect in expired_keys:
-            print(f"[STATUS] {effect} expired.")
-            if effect == "speed":
-                self.player.speed = PLAYER_SPEED  # reset speed to base speed
-            elif effect == "multiplier":
-                self.player.score_multiplier = 1.0  # reset score multiplier
-            elif effect == "cooldown":
-                self.player.cooldown_modifier = 1.0  # reset cooldown modifier
-            elif effect == "shield":
-                self.player.has_shield = False  # deactivate shield
-            del self.active_effects[effect]
-    
+    def update(self, delta_time):
+        expired = []
+        for name, data in self.active_effects.items():
+            if data.get("charges", 0) > 0:
+                continue  # shield-like effect, not time-based
+            data["time_left"] -= delta_time
+            if data["time_left"] <= 0:
+                expired.append(name)
+        for name in expired:
+            del self.active_effects[name]
+            self._remove_stat_boost(name)
+
+    def _remove_stat_boost(self, effect_name):
+        if effect_name == "speed":
+            self.player.speed_multiplier = 1.0
+        elif effect_name == "cooldown":
+            self.player.cooldown_multiplier = 1.0
+        elif effect_name == "multiplier":
+            self.player.score_multiplier = 1.0
+        elif effect_name == "shield":
+            self.player.shield_active = False
+
     def get_effect_text_lines(self):
         lines = []
         for effect_type, data in self.active_effects.items():
+            duration = data["time_left"]
             if effect_type == "speed":
-                lines.append(f"Speed +{int(data.get('magnitude', 0) * 100)}% ({int(data.get('time', 0))}s)")
+                lines.append(f"Speed +50% ({int(duration)}s)")
             elif effect_type == "multiplier":
-                lines.append(f"Score x{data.get('magnitude', 1)} ({int(data.get('time', 0))}s)")
+                lines.append(f"Score x2 ({int(duration)}s)")
             elif effect_type == "cooldown":
-                lines.append(f"Cooldown -{int(data.get('reduction', 0) * 100)}% ({int(data.get('time_left', 0))}s)")
+                lines.append(f"Cooldown -50% ({int(duration)}s)")
             elif effect_type == "shield":
-                lines.append(f"Shield Active ({data.get('charges', 1)} charges)")
-            elif effect_type == "ghost_dash":
-                lines.append(f"Ghost Dash Ready")
-            elif effect_type == "second_chance":
-                lines.append(f"Second Chance Active")
-            elif effect_type == "artifact_insurance":
-                lines.append(f"Artifact Insurance Active")
+                lines.append(f"Shield Active")
         return lines
+
+    def has(self, effect_name):
+        return effect_name in self.active_effects
+
+    def get_magnitude(self, effect_name: str) -> float:
+        return self.active_effects.get(effect_name, {}).get("magnitude", 0.0)
+
+    def consume_charge(self, effect_name: str) -> bool:
+        """Use one charge of a charged effect like 'shield'. Returns True if absorbed, else False."""
+        effect = self.active_effects.get(effect_name)
+        if effect and effect.get("charges", 0) > 0:
+            effect["charges"] -= 1
+            if effect["charges"] <= 0:
+                del self.active_effects[effect_name]
+            return True
+        return False
